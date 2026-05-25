@@ -1,20 +1,29 @@
 /**
  * Server-side CMS query helpers.
  *
- * Use these from Server Components and Route Handlers. Each function performs
- * one Supabase fetch and returns a typed, camelCased object (or array).
+ * PUBLIC queries (hero, about, projects, blogs, etc.) are wrapped in BOTH:
+ *   - React `cache()` — dedupes within a single request (layout + page).
+ *   - Next.js `unstable_cache` — caches the *result* across requests via the
+ *     Data Cache, so even cold visitors past the ISR window only trigger ONE
+ *     Supabase round-trip per (tag, revalidate) window, shared by every page.
  *
- * Wrapped in React's `cache()` so duplicate calls *within the same request*
- * (e.g. layout + page both fetching `getHero()`) only hit Supabase once.
+ * All public queries use the stateless `supabasePublic` client (anon key,
+ * no cookies) — required because cookie-bound clients can't be cached
+ * across requests.
  *
- * Singleton getters return a default object if the row is missing — never null —
- * so callers can render safely without conditional checks.
+ * ADMIN queries (contact messages) keep the cookie-bound server client so
+ * RLS still enforces auth.
+ *
+ * Cache invalidation: `/api/admin/revalidate` calls revalidateTag('cms', ...)
+ * which nukes everything tagged "cms" the next time it's read.
  */
 
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { defaultAbout, defaultContact, defaultHero, defaultResumeSettings } from "./defaults";
 import { deserializeRow, deserializeRows, type DbRow } from "./mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabasePublic } from "@/lib/supabase/public";
 import { DB_TABLES } from "./tables";
 import type {
   About,
@@ -37,291 +46,391 @@ import type {
   Testimonial,
 } from "./types";
 
+/** Common cache settings — 1 hour TTL, all tagged "cms" + a specific subtag. */
+const CACHE_TTL_SECONDS = 3600;
+const tags = (subtag: string) => ["cms", `cms:${subtag}`];
+
 // ============================================================================
 // Singletons
 // ============================================================================
 
-export const getHero = cache(async (): Promise<Hero> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from(DB_TABLES.HERO).select("*").single();
-
-  if (error || !data) return defaultHero as Hero;
-  return deserializeRow<Hero>(data as DbRow, "hero") ?? (defaultHero as Hero);
-});
-
-export const getAbout = cache(async (): Promise<About> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from(DB_TABLES.ABOUT).select("*").single();
-
-  if (error || !data) return defaultAbout as About;
-  return deserializeRow<About>(data as DbRow, "about") ?? (defaultAbout as About);
-});
-
-export const getContact = cache(async (): Promise<Contact> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from(DB_TABLES.CONTACT).select("*").single();
-
-  if (error || !data) return defaultContact as Contact;
-
-  const row = deserializeRow<Record<string, unknown>>(data as DbRow, "contact") ?? {};
-  // Flatten contact_info → contactInfo nested shape
-  return {
-    pageIntroText: (row.pageIntroText as string) ?? null,
-    hireMeLabel: (row.hireMeLabel as string) ?? "Hire Me",
-    contactInfo: {
-      email: (row.email as string) ?? "",
-      phone: (row.phone as string) ?? null,
-      location: (row.location as string) ?? null,
+export const getHero = cache(
+  unstable_cache(
+    async (): Promise<Hero> => {
+      const { data, error } = await supabasePublic.from(DB_TABLES.HERO).select("*").single();
+      if (error || !data) return defaultHero as Hero;
+      return deserializeRow<Hero>(data as DbRow, "hero") ?? (defaultHero as Hero);
     },
-    socialLinks: (row.socialLinks as Contact["socialLinks"]) ?? [],
-  };
-});
+    ["cms:hero"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("hero") },
+  ),
+);
 
-export const getResumeSettings = cache(async (): Promise<ResumeSettings> => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from(DB_TABLES.RESUME_SETTINGS)
-    .select("*")
-    .single();
+export const getAbout = cache(
+  unstable_cache(
+    async (): Promise<About> => {
+      const { data, error } = await supabasePublic.from(DB_TABLES.ABOUT).select("*").single();
+      if (error || !data) return defaultAbout as About;
+      return deserializeRow<About>(data as DbRow, "about") ?? (defaultAbout as About);
+    },
+    ["cms:about"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("about") },
+  ),
+);
 
-  if (error || !data) return defaultResumeSettings;
-  return {
-    activeResumeId: ((data as DbRow).active_resume_id as string | null) ?? null,
-  };
-});
+export const getContact = cache(
+  unstable_cache(
+    async (): Promise<Contact> => {
+      const { data, error } = await supabasePublic.from(DB_TABLES.CONTACT).select("*").single();
+      if (error || !data) return defaultContact as Contact;
+
+      const row = deserializeRow<Record<string, unknown>>(data as DbRow, "contact") ?? {};
+      return {
+        pageIntroText: (row.pageIntroText as string) ?? null,
+        hireMeLabel: (row.hireMeLabel as string) ?? "Hire Me",
+        contactInfo: {
+          email: (row.email as string) ?? "",
+          phone: (row.phone as string) ?? null,
+          location: (row.location as string) ?? null,
+        },
+        socialLinks: (row.socialLinks as Contact["socialLinks"]) ?? [],
+      };
+    },
+    ["cms:contact"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("contact") },
+  ),
+);
+
+export const getResumeSettings = cache(
+  unstable_cache(
+    async (): Promise<ResumeSettings> => {
+      const { data, error } = await supabasePublic
+        .from(DB_TABLES.RESUME_SETTINGS)
+        .select("*")
+        .single();
+      if (error || !data) return defaultResumeSettings;
+      return {
+        activeResumeId: ((data as DbRow).active_resume_id as string | null) ?? null,
+      };
+    },
+    ["cms:resume-settings"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("resume-settings") },
+  ),
+);
 
 // ============================================================================
-// Collections — published only by default for public pages
+// Collections — published only, cached
 // ============================================================================
 
-type CollectionOpts = {
-  includeUnpublished?: boolean;
-  limit?: number;
-};
+/** Columns needed for the home/portfolio listing cards (skip heavy HTML). */
+const PROJECT_LIST_COLS =
+  "id, slug, title, summary, cover_image_url, gallery_images, github_url, live_demo_url, tech_stack, featured, status, order_index, created_at, updated_at";
 
-function maybePublishedFilter<T>(query: T, includeUnpublished?: boolean): T {
-  if (includeUnpublished) return query;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (query as any).eq("status", "published");
-}
+/** Full project columns including the heavy `description` HTML — slug page only. */
+const PROJECT_FULL_COLS = "*";
 
-export async function getProjects(opts: CollectionOpts = {}): Promise<Project[]> {
-  const supabase = await createSupabaseServerClient();
-  let query = supabase.from(DB_TABLES.PROJECTS).select("*").order("order_index");
-  query = maybePublishedFilter(query, opts.includeUnpublished);
-  if (opts.limit) query = query.limit(opts.limit);
+/** Columns needed for the blog listing — skip heavy `content`. */
+const BLOG_LIST_COLS =
+  "id, slug, title, excerpt, cover_image_url, author, published_date, read_time, tags, status, order_index, created_at, updated_at";
 
-  const { data, error } = await query;
-  if (error || !data) return [];
-  return deserializeRows<Project>(data as DbRow[], "projects");
-}
+const BLOG_FULL_COLS = "*";
 
-export async function getFeaturedProjects(limit = 6): Promise<Project[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from(DB_TABLES.PROJECTS)
-    .select("*")
-    .eq("status", "published")
-    .eq("featured", true)
-    .order("order_index")
-    .limit(limit);
+export const getProjects = cache(
+  unstable_cache(
+    async (): Promise<Project[]> => {
+      const { data, error } = await supabasePublic
+        .from(DB_TABLES.PROJECTS)
+        .select(PROJECT_LIST_COLS)
+        .eq("status", "published")
+        .order("order_index");
+      if (error || !data) return [];
+      return deserializeRows<Project>(data as DbRow[], "projects");
+    },
+    ["cms:projects-list"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
+  ),
+);
 
-  if (error || !data || data.length === 0) {
-    return getProjects({ limit });
-  }
-  return deserializeRows<Project>(data as DbRow[], "projects");
-}
+export const getProjectBySlug = cache(
+  unstable_cache(
+    async (slug: string): Promise<Project | null> => {
+      const { data, error } = await supabasePublic
+        .from(DB_TABLES.PROJECTS)
+        .select(PROJECT_FULL_COLS)
+        .eq("slug", slug)
+        .eq("status", "published")
+        .maybeSingle();
+      if (error || !data) return null;
+      return deserializeRow<Project>(data as DbRow, "projects");
+    },
+    ["cms:project-detail"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
+  ),
+);
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from(DB_TABLES.PROJECTS)
-    .select("*")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .maybeSingle();
+export const getProjectSlugs = cache(
+  unstable_cache(
+    async (): Promise<string[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.PROJECTS)
+        .select("slug")
+        .eq("status", "published");
+      return (data ?? []).map((r) => r.slug as string).filter(Boolean);
+    },
+    ["cms:project-slugs"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
+  ),
+);
 
-  if (error || !data) return null;
-  return deserializeRow<Project>(data as DbRow, "projects");
-}
+export const getBlogs = cache(
+  unstable_cache(
+    async (limit?: number): Promise<Blog[]> => {
+      let query = supabasePublic
+        .from(DB_TABLES.BLOGS)
+        .select(BLOG_LIST_COLS)
+        .eq("status", "published")
+        .order("published_date", { ascending: false });
+      if (limit) query = query.limit(limit);
+      const { data, error } = await query;
+      if (error || !data) return [];
+      return deserializeRows<Blog>(data as DbRow[], "blogs");
+    },
+    ["cms:blogs-list"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
+  ),
+);
 
-export async function getProjectSlugs(): Promise<string[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.PROJECTS)
-    .select("slug")
-    .eq("status", "published");
-  return (data ?? []).map((r) => r.slug as string).filter(Boolean);
-}
+/** Convenience overload — call as `getBlogs({ limit: 3 })` to match older API. */
+export const getBlogsWithOpts = (opts: { limit?: number } = {}): Promise<Blog[]> =>
+  getBlogs(opts.limit);
 
-export async function getBlogs(opts: CollectionOpts = {}): Promise<Blog[]> {
-  const supabase = await createSupabaseServerClient();
-  let query = supabase
-    .from(DB_TABLES.BLOGS)
-    .select("*")
-    .order("published_date", { ascending: false });
-  query = maybePublishedFilter(query, opts.includeUnpublished);
-  if (opts.limit) query = query.limit(opts.limit);
+export const getBlogBySlug = cache(
+  unstable_cache(
+    async (slug: string): Promise<Blog | null> => {
+      const { data, error } = await supabasePublic
+        .from(DB_TABLES.BLOGS)
+        .select(BLOG_FULL_COLS)
+        .eq("slug", slug)
+        .eq("status", "published")
+        .maybeSingle();
+      if (error || !data) return null;
+      return deserializeRow<Blog>(data as DbRow, "blogs");
+    },
+    ["cms:blog-detail"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
+  ),
+);
 
-  const { data, error } = await query;
-  if (error || !data) return [];
-  return deserializeRows<Blog>(data as DbRow[], "blogs");
-}
+export const getBlogSlugs = cache(
+  unstable_cache(
+    async (): Promise<string[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.BLOGS)
+        .select("slug")
+        .eq("status", "published");
+      return (data ?? []).map((r) => r.slug as string).filter(Boolean);
+    },
+    ["cms:blog-slugs"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
+  ),
+);
 
-export async function getBlogBySlug(slug: string): Promise<Blog | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from(DB_TABLES.BLOGS)
-    .select("*")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .maybeSingle();
+export const getServices = cache(
+  unstable_cache(
+    async (): Promise<Service[]> => {
+      const { data, error } = await supabasePublic
+        .from(DB_TABLES.SERVICES)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      if (error || !data) return [];
+      return deserializeRows<Service>(data as DbRow[], "services");
+    },
+    ["cms:services"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("services") },
+  ),
+);
 
-  if (error || !data) return null;
-  return deserializeRow<Blog>(data as DbRow, "blogs");
-}
+export const getSkills = cache(
+  unstable_cache(
+    async (): Promise<Skill[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.SKILLS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Skill>((data ?? []) as DbRow[], "skills");
+    },
+    ["cms:skills"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("skills") },
+  ),
+);
 
-export async function getBlogSlugs(): Promise<string[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.BLOGS)
-    .select("slug")
-    .eq("status", "published");
-  return (data ?? []).map((r) => r.slug as string).filter(Boolean);
-}
+export const getTechStackCategories = cache(
+  unstable_cache(
+    async (): Promise<TechStackCategory[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.TECH_STACK_CATEGORIES)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<TechStackCategory>(
+        (data ?? []) as DbRow[],
+        "techStackCategories",
+      );
+    },
+    ["cms:tech-stack"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("tech-stack") },
+  ),
+);
 
-export async function getServices(opts: CollectionOpts = {}): Promise<Service[]> {
-  const supabase = await createSupabaseServerClient();
-  let query = supabase.from(DB_TABLES.SERVICES).select("*").order("order_index");
-  query = maybePublishedFilter(query, opts.includeUnpublished);
+export const getTestimonials = cache(
+  unstable_cache(
+    async (): Promise<Testimonial[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.TESTIMONIALS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Testimonial>((data ?? []) as DbRow[], "testimonials");
+    },
+    ["cms:testimonials"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("testimonials") },
+  ),
+);
 
-  const { data, error } = await query;
-  if (error || !data) return [];
-  return deserializeRows<Service>(data as DbRow[], "services");
-}
+export const getAchievements = cache(
+  unstable_cache(
+    async (): Promise<Achievement[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.ACHIEVEMENTS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Achievement>((data ?? []) as DbRow[], "achievements");
+    },
+    ["cms:achievements"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("achievements") },
+  ),
+);
 
-export async function getSkills(): Promise<Skill[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.SKILLS)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Skill>((data ?? []) as DbRow[], "skills");
-}
+export const getEducation = cache(
+  unstable_cache(
+    async (): Promise<Education[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.EDUCATION)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Education>((data ?? []) as DbRow[], "education");
+    },
+    ["cms:education"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("education") },
+  ),
+);
 
-export async function getTechStackCategories(): Promise<TechStackCategory[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.TECH_STACK_CATEGORIES)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<TechStackCategory>(
-    (data ?? []) as DbRow[],
-    "techStackCategories",
-  );
-}
+export const getExperience = cache(
+  unstable_cache(
+    async (): Promise<Experience[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.EXPERIENCE)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Experience>((data ?? []) as DbRow[], "experience");
+    },
+    ["cms:experience"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("experience") },
+  ),
+);
 
-export async function getTestimonials(): Promise<Testimonial[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.TESTIMONIALS)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Testimonial>((data ?? []) as DbRow[], "testimonials");
-}
+export const getCertifications = cache(
+  unstable_cache(
+    async (): Promise<Certification[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.CERTIFICATIONS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Certification>((data ?? []) as DbRow[], "certifications");
+    },
+    ["cms:certifications"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("certifications") },
+  ),
+);
 
-export async function getAchievements(opts: CollectionOpts = {}): Promise<Achievement[]> {
-  const supabase = await createSupabaseServerClient();
-  let query = supabase.from(DB_TABLES.ACHIEVEMENTS).select("*").order("order_index");
-  query = maybePublishedFilter(query, opts.includeUnpublished);
+export const getPublications = cache(
+  unstable_cache(
+    async (): Promise<Publication[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.PUBLICATIONS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Publication>((data ?? []) as DbRow[], "publications");
+    },
+    ["cms:publications"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("publications") },
+  ),
+);
 
-  const { data } = await query;
-  return deserializeRows<Achievement>((data ?? []) as DbRow[], "achievements");
-}
+export const getPublicationSlugs = cache(
+  unstable_cache(
+    async (): Promise<string[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.PUBLICATIONS)
+        .select("slug")
+        .eq("status", "published");
+      return (data ?? []).map((r) => r.slug as string).filter(Boolean);
+    },
+    ["cms:publication-slugs"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("publications") },
+  ),
+);
 
-export async function getEducation(): Promise<Education[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.EDUCATION)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Education>((data ?? []) as DbRow[], "education");
-}
+export const getClients = cache(
+  unstable_cache(
+    async (): Promise<Client[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.CLIENTS)
+        .select("*")
+        .eq("status", "published")
+        .order("order_index");
+      return deserializeRows<Client>((data ?? []) as DbRow[], "clients");
+    },
+    ["cms:clients"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("clients") },
+  ),
+);
 
-export async function getExperience(): Promise<Experience[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.EXPERIENCE)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Experience>((data ?? []) as DbRow[], "experience");
-}
+export const getResumes = cache(
+  unstable_cache(
+    async (): Promise<Resume[]> => {
+      const { data } = await supabasePublic.from(DB_TABLES.RESUMES).select("*");
+      return deserializeRows<Resume>((data ?? []) as DbRow[], "resumes");
+    },
+    ["cms:resumes"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("resumes") },
+  ),
+);
 
-export async function getCertifications(): Promise<Certification[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.CERTIFICATIONS)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Certification>((data ?? []) as DbRow[], "certifications");
-}
-
-export async function getPublications(): Promise<Publication[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.PUBLICATIONS)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Publication>((data ?? []) as DbRow[], "publications");
-}
-
-export async function getPublicationSlugs(): Promise<string[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.PUBLICATIONS)
-    .select("slug")
-    .eq("status", "published");
-  return (data ?? []).map((r) => r.slug as string).filter(Boolean);
-}
-
-export async function getClients(): Promise<Client[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.CLIENTS)
-    .select("*")
-    .eq("status", "published")
-    .order("order_index");
-  return deserializeRows<Client>((data ?? []) as DbRow[], "clients");
-}
-
-export async function getResumes(): Promise<Resume[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.from(DB_TABLES.RESUMES).select("*");
-  return deserializeRows<Resume>((data ?? []) as DbRow[], "resumes");
-}
-
+/** Backwards-compat helper — combines resumeSettings + resumes to find the active one. */
 export async function getActiveResume(): Promise<Resume | null> {
   const settings = await getResumeSettings();
   if (!settings.activeResumeId) return null;
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from(DB_TABLES.RESUMES)
-    .select("*")
-    .eq("id", settings.activeResumeId)
-    .maybeSingle();
-  if (!data) return null;
-  return deserializeRow<Resume>(data as DbRow, "resumes");
+  const resumes = await getResumes();
+  return resumes.find((r) => r.id === settings.activeResumeId) ?? null;
+}
+
+/** Featured projects helper — derives from the cached project list. */
+export async function getFeaturedProjects(limit = 6): Promise<Project[]> {
+  const all = await getProjects();
+  const featured = all.filter((p) => p.featured);
+  return featured.length > 0 ? featured.slice(0, limit) : all.slice(0, limit);
 }
 
 // ============================================================================
-// Admin-only
+// Admin-only (cookie-bound, RLS-enforced, NOT cached cross-request)
 // ============================================================================
 
 export async function getContactMessages(): Promise<ContactMessage[]> {
@@ -330,8 +439,5 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
     .from(DB_TABLES.CONTACT_MESSAGES)
     .select("*")
     .order("created_at", { ascending: false });
-  return deserializeRows<ContactMessage>(
-    (data ?? []) as DbRow[],
-    "contactMessages",
-  );
+  return deserializeRows<ContactMessage>((data ?? []) as DbRow[], "contactMessages");
 }

@@ -1,13 +1,19 @@
 /**
  * POST /api/admin/revalidate
- * Body: { paths: string[] }
+ * Body: { paths?: string[], tags?: string[] }
  *
- * Triggers on-demand ISR revalidation after the admin saves CMS data.
- * Auth-guarded so only the admin can flush the cache.
+ * Triggers cache invalidation after admin saves CMS data. Two layers:
+ *   - revalidatePath: flushes the page-level ISR cache so the next request
+ *     re-renders the page server-side.
+ *   - revalidateTag('cms'): nukes every unstable_cache entry under the "cms"
+ *     tag (shared by all public CMS queries) so the next Supabase fetch
+ *     pulls fresh data.
+ *
+ * Auth-guarded — admin session required.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
@@ -17,15 +23,22 @@ export async function POST(request: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  let body: { paths?: string[] };
+  let body: { paths?: string[]; tags?: string[] };
   try {
     body = await request.json();
   } catch {
     body = {};
   }
 
+  // Default: invalidate everything under "cms" + revalidate home page ISR.
   const paths = body.paths ?? ["/"];
-  for (const p of paths) revalidatePath(p);
+  const tagsToInvalidate = body.tags ?? ["cms"];
 
-  return NextResponse.json({ ok: true, revalidated: { paths } });
+  for (const p of paths) revalidatePath(p);
+  for (const t of tagsToInvalidate) {
+    // Next 16 signature: revalidateTag(tag, profile). "max" forces immediate flush.
+    revalidateTag(t, "max");
+  }
+
+  return NextResponse.json({ ok: true, revalidated: { paths, tags: tagsToInvalidate } });
 }
