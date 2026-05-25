@@ -41,3 +41,6 @@ out/
 # Dev logs
 dev.log
 dev.err
+
+# Internal commit message helpers
+COMMIT_MSG.tmp
