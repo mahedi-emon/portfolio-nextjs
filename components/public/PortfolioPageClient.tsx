@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Sparkles,
   FolderKanban,
@@ -118,11 +119,13 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
               <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out">
                 {project.coverImageUrl ? (
                   <div className="relative h-52 overflow-hidden img-hover-shine">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    <Image
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
                       src={project.coverImageUrl}
                       alt={project.title}
+                      fill
+                      quality={88}
+                      sizes="(min-width: 768px) 50vw, 100vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
@@ -191,12 +194,14 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
               <div className="relative bg-[#0B1320]/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out">
                 <div className="grid md:grid-cols-[200px_1fr] gap-6 p-6">
                   {pub.coverImageUrl ? (
-                    <div className="h-40 md:h-full rounded-xl overflow-hidden img-hover-shine">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    <div className="relative h-40 md:h-full rounded-xl overflow-hidden img-hover-shine min-h-[160px]">
+                      <Image
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
                         src={pub.coverImageUrl}
                         alt={pub.title}
+                        fill
+                        quality={88}
+                        sizes="200px"
                       />
                     </div>
                   ) : (
@@ -340,12 +345,14 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-2xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.14] transition-all duration-600 ease-out" />
                     <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out">
                       {cert.certificateImageUrl && (
-                        <div className="h-40 overflow-hidden img-hover-shine">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        <div className="relative h-40 overflow-hidden img-hover-shine">
+                          <Image
+                            className="object-cover group-hover:scale-110 transition-transform duration-700"
                             src={cert.certificateImageUrl}
                             alt={cert.certificateTitle}
+                            fill
+                            quality={88}
+                            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                           />
                         </div>
                       )}

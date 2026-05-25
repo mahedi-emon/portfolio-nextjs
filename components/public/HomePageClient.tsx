@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -258,11 +259,15 @@ export function HomePageClient({ data }: { data: HomeData }) {
 
                   <div className="absolute -inset-6 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity animate-pulse" />
 
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     className="relative w-80 h-80 rounded-3xl object-cover border-4 border-white/10 shadow-2xl shadow-[#C77DFF]/20 transition-all duration-500 group-hover:scale-[1.02] group-hover:border-[#C77DFF]/50"
                     src={hero.heroImageUrl}
-                    alt="Profile"
+                    alt={hero.fullName || "Profile"}
+                    width={320}
+                    height={320}
+                    priority
+                    quality={92}
+                    sizes="320px"
                   />
                 </div>
               ) : (
@@ -328,11 +333,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
               <>
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#C77DFF] via-[#E0AAFF] to-[#9D4EDD] rounded-3xl opacity-60 blur-sm group-hover:opacity-100 transition-opacity animate-gradient-border" />
                 <div className="absolute -inset-4 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur opacity-25 group-hover:opacity-40 transition-all duration-500" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   className="relative w-full aspect-square rounded-3xl object-cover shadow-2xl shadow-[#C77DFF]/20 border-2 border-white/10 transition-all duration-500 group-hover:scale-[1.02] group-hover:border-[#C77DFF]/50"
                   src={about.profileImageUrl}
-                  alt="Profile"
+                  alt={about.fullName || "Profile"}
+                  width={500}
+                  height={500}
+                  quality={92}
+                  sizes="(min-width: 1024px) 33vw, 100vw"
                 />
               </>
             ) : (
@@ -491,12 +499,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#C77DFF]/20 to-[#9D4EDD]/20 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700" />
                 <div className="relative">
                   {service.imageUrl ? (
-                    <div className="w-full h-40 rounded-2xl overflow-hidden mb-6 border border-white/10">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-6 border border-white/10">
+                      <Image
                         src={service.imageUrl}
                         alt={service.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        quality={88}
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     </div>
                   ) : (
@@ -546,11 +556,13 @@ export function HomePageClient({ data }: { data: HomeData }) {
               >
                 {project.coverImageUrl && (
                   <div className="relative h-56 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    <Image
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                       src={project.coverImageUrl}
                       alt={project.title}
+                      fill
+                      quality={88}
+                      sizes="(min-width: 768px) 50vw, 100vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute bottom-4 left-4 right-4 flex gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
@@ -636,12 +648,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
                 className="group p-6 rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:border-white/[0.12] transition-all duration-600 ease-out hover:-translate-y-1"
               >
                 {post.coverImageUrl ? (
-                  <div className="w-full h-40 rounded-2xl overflow-hidden mb-5 border border-white/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-5 border border-white/10">
+                    <Image
                       src={post.coverImageUrl}
                       alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      fill
+                      quality={88}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   </div>
                 ) : (
@@ -692,10 +706,13 @@ export function HomePageClient({ data }: { data: HomeData }) {
                 <p className="text-lg text-[#C9D1D9] italic leading-relaxed mb-6">&ldquo;{item.quote}&rdquo;</p>
                 <footer className="flex items-center gap-4">
                   {item.avatarUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
+                    <Image
                       src={item.avatarUrl}
                       alt={item.author}
+                      width={48}
+                      height={48}
+                      quality={88}
+                      sizes="48px"
                       className="w-12 h-12 rounded-full object-cover border-2 border-[#C77DFF]/30"
                     />
                   ) : (
@@ -765,11 +782,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
                   <div className="absolute inset-0 bg-gradient-to-br from-[#C77DFF]/0 to-[#9D4EDD]/0 group-hover:from-[#C77DFF]/5 group-hover:to-[#9D4EDD]/10 transition-all duration-500" />
 
                   {client.logoUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
+                    <Image
                       className="max-h-14 w-auto object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
                       src={client.logoUrl}
                       alt={`${client.name} logo`}
+                      width={200}
+                      height={80}
+                      quality={90}
+                      sizes="200px"
                     />
                   ) : (
                     <div className="relative">
@@ -863,12 +883,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
                   className="group p-6 rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:border-white/[0.12] transition-all duration-600 ease-out hover:-translate-y-1"
                 >
                   {coverImage && (
-                    <div className="w-full h-40 rounded-2xl overflow-hidden mb-5 border border-white/10">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-5 border border-white/10">
+                      <Image
                         src={coverImage}
                         alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        quality={88}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     </div>
                   )}
@@ -925,11 +947,14 @@ export function HomePageClient({ data }: { data: HomeData }) {
               >
                 <div className="flex items-start gap-5">
                   {cert.certificateImageUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
+                    <Image
                       className="w-16 h-16 rounded-2xl object-cover border-2 border-white/10 group-hover:border-[#C77DFF]/50 transition-colors"
                       src={cert.certificateImageUrl}
                       alt={cert.certificateTitle}
+                      width={64}
+                      height={64}
+                      quality={88}
+                      sizes="64px"
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C77DFF]/20 to-[#9D4EDD]/20 flex items-center justify-center">

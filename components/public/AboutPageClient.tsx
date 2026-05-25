@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { User, GraduationCap, Briefcase, Award, Code, Sparkles, MapPin, Mail } from "lucide-react";
 import type {
   About,
@@ -46,11 +47,15 @@ export function AboutPageClient({ data }: { data: AboutData }) {
               <div className="profile-card-inner relative bg-[#0B1320]/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/[0.06] transition-all duration-500 ease-out">
                 {about.profileImageUrl ? (
                   <div className="profile-card-image relative overflow-hidden rounded-2xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       className="w-full aspect-square rounded-2xl object-cover border-4 border-white/10 shadow-lg transition-transform duration-700"
                       src={about.profileImageUrl}
-                      alt="Profile"
+                      alt={about.fullName || "Profile"}
+                      width={320}
+                      height={320}
+                      priority
+                      quality={92}
+                      sizes="(min-width: 1024px) 320px, 100vw"
                     />
                     <div className="profile-shine absolute inset-0 pointer-events-none" />
                   </div>
