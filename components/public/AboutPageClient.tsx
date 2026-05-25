@@ -185,13 +185,6 @@ export function AboutPageClient({ data }: { data: AboutData }) {
                       ? String(new Date(item.endDate).getFullYear())
                       : "";
 
-                  const initials = (item.institution ?? "")
-                    .split(" ")
-                    .map((w) => w[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase();
-
                   return (
                     <article
                       key={item.id}
@@ -200,10 +193,8 @@ export function AboutPageClient({ data }: { data: AboutData }) {
                     >
                       <div className="flex gap-4">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#1a1f35] to-[#0B1320] border border-white/10 flex items-center justify-center group-hover:border-[#C77DFF]/30 transition-colors">
-                            <span className="text-sm font-bold bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] bg-clip-text text-transparent">
-                              {initials}
-                            </span>
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C77DFF]/15 to-[#9D4EDD]/15 border border-[#C77DFF]/25 flex items-center justify-center shadow-lg shadow-[#C77DFF]/10 group-hover:from-[#C77DFF]/25 group-hover:to-[#9D4EDD]/25 group-hover:border-[#C77DFF]/50 group-hover:scale-105 transition-all duration-300">
+                            <GraduationCap className="w-5 h-5 text-[#C77DFF]" />
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
