@@ -1,274 +1,191 @@
-# 🚀 Portfolio Website CMS
+# 🚀 Portfolio Website + Admin CMS
 
-A modern, full-featured portfolio website with an integrated Content Management System (CMS) built with React, TypeScript, and Supabase.
+Modern portfolio website with an integrated admin CMS. **Next.js 16 App Router + TypeScript + Tailwind v4 + Supabase**, deployed on **Vercel**.
 
-![Portfolio CMS](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=flat-square&logo=supabase)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=flat-square&logo=tailwindcss)
-![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=flat-square&logo=vite)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel)
+
+- 🌐 Live site: [mahedihasanemon.site](https://mahedihasanemon.site/)
+- 👨‍💻 Author: **Mahedi Hasan Emon** — Full-Stack Developer
 
 ---
-- Portfolio Website: [Mahedi Hasan Emon](https://mahedihasanemon.site/)
+
 ## ✨ Features
 
-### 🎨 Public Website
-- **Hero Section** - Dynamic introduction with CTA buttons
-- **About Page** - Bio, skills, education & experience
-- **Portfolio** - Projects, publications & achievements showcase
-- **Services** - List of professional services offered
-- **Blog** - Article publishing with rich content
-- **Contact** - Contact form with message management
+### Public Site (SSR + ISR)
+- **Hero** with dynamic spinning gradient border, floating orbs, animated stats
+- **About** with profile + skills + experience + education + certifications
+- **Portfolio** + project detail (`/portfolio/[slug]`) with gallery
+- **Services** with image-or-icon cards
+- **Blog** + post (`/blog/[slug]`) with sanitized rich content
+- **Publications**, **Testimonials**, **Achievements** dedicated pages
+- **Contact** form (server-side anon insert into Supabase)
+- AuroraMesh canvas particle background, full responsive design
 
-### 🔐 Admin Panel
-- **Secure Authentication** - Supabase Auth with session management
-- **Dashboard** - Overview stats and quick actions
-- **CMS Editor** - Edit all website content in real-time
-- **Media Library** - Upload, manage & organize files
-- **Resume Manager** - Upload PDFs and set active resume
-- **Contact Messages** - View and manage inquiries
+### Admin Panel (`/mhe-control-center`)
+- Supabase Auth (single-admin model)
+- Server-side middleware route guard
+- Dynamic CMS editor for 16 sections — schema-driven `EntityForm`
+- Real Supabase Storage upload via `/api/admin/upload` (no more base64)
+- Toast notifications via `sonner`
+- Messages list/detail with reply + delete
+- Mobile-responsive sidebar drawer
 
-### 🗄️ Backend (Supabase)
-- **PostgreSQL Database** - 17 tables with RLS policies
-- **File Storage** - 4 buckets (images, documents, resumes, gallery)
-- **Row Level Security** - Protected data access
-- **Real-time Updates** - Live data synchronization
+### SEO
+- Per-page `generateMetadata` (unique title / description / OG / Twitter)
+- JSON-LD via Server Components (Person, WebSite, BlogPosting, etc.)
+- Massive keyword bank covering Mahedi Hasan Emon + CSE + Full-stack + Django + React + Next.js + ML/AI/NLP/BanglaBERT + DevOps
+- Native `sitemap.xml` + `robots.txt`
+- ISR (`revalidate: 60`) on every public route
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Frontend** | React 18, TypeScript, Vite 5 |
-| **Styling** | Tailwind CSS 3, Custom Components |
-| **Backend** | Supabase (PostgreSQL, Auth, Storage) |
-| **Routing** | React Router DOM v6 |
-| **Icons** | Lucide React |
+| Layer | Stack |
+|---|---|
+| **Framework** | Next.js 16 (App Router, Turbopack) |
+| **Language** | TypeScript 5 (strict) |
+| **Styling** | Tailwind CSS 4 + custom CSS animations |
+| **Backend** | Supabase (PostgreSQL + Auth + Storage) |
+| **Auth** | `@supabase/ssr` (cookie-bound, server + browser) |
+| **Animation** | Framer Motion + custom keyframes |
+| **Icons** | Lucide React + Simple Icons CDN |
 | **Validation** | Zod |
-| **Build** | Vite with code splitting |
+| **Sanitization** | DOMPurify |
+| **Toasts** | Sonner |
+| **Hosting** | Vercel |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── admin/                 # Admin panel
-│   ├── cms/              # CMS schema definitions
-│   ├── components/       # Admin UI components
-│   └── pages/            # Admin pages
-├── app/                  # App configuration
-│   ├── guards/           # Route protection
-│   ├── layouts/          # Page layouts
-│   └── providers/        # Context providers
-├── components/           # Shared components
-├── context/              # React contexts
-│   ├── AuthContext.tsx   # Authentication state
-│   └── CmsContext.tsx    # CMS data management
-├── hooks/                # Custom React hooks
-├── lib/                  # External library configs
-│   └── supabase.ts       # Supabase client
-├── pages/                # Public pages
-├── services/             # API services
-│   ├── supabaseCms.ts    # Supabase CRUD operations
-│   └── cmsRepository.ts  # Local data fallback
-├── styles/               # Global styles
-└── utils/                # Utility functions
+.
+├── app/                          # Next.js App Router
+│   ├── layout.tsx                # Root: fonts, metadata, AuroraMesh, Toaster
+│   ├── (public)/                 # Public site (SSR + ISR)
+│   │   ├── layout.tsx            # Header + Footer
+│   │   ├── page.tsx              # Home
+│   │   ├── about/page.tsx
+│   │   ├── portfolio/page.tsx + [slug]/page.tsx
+│   │   ├── services/page.tsx
+│   │   ├── blog/page.tsx + [slug]/page.tsx
+│   │   ├── publications/page.tsx
+│   │   ├── contact/page.tsx
+│   │   └── ...
+│   ├── mhe-control-center/       # Admin panel (auth-guarded)
+│   │   ├── login/page.tsx
+│   │   ├── auth/callback/page.tsx
+│   │   └── (dashboard)/
+│   │       ├── dashboard/page.tsx
+│   │       ├── cms/[section]/page.tsx   # Dynamic CMS editor
+│   │       └── messages/page.tsx + [id]/page.tsx
+│   └── api/
+│       ├── admin/upload/route.ts        # Auth-guarded → Supabase Storage
+│       ├── admin/revalidate/route.ts    # ISR cache flush
+│       └── contact/route.ts             # Public contact insert
+├── components/
+│   ├── public/                   # Header, Footer, HomePageClient, ServicesPageClient, ContactPageClient
+│   ├── admin/                    # AdminLayoutClient, CmsSectionEditor, EntityForm, ImageUploadField
+│   ├── common/                   # AuroraMesh, ScrollToTop, JsonLd, modals
+│   └── ui/                       # Toaster
+├── lib/
+│   ├── supabase/                 # server, browser, proxy, service-role clients
+│   ├── cms/                      # schemas, queries, mutations, mappers, types
+│   ├── storage/                  # bucket helpers
+│   ├── seo/                      # keywords, metadata, jsonld
+│   └── utils/                    # sanitizeHtml, iconMap, getToolLogoUrl, cn
+├── scripts/
+│   └── migrate-base64-to-storage.mjs   # One-time migration of legacy inline images
+├── proxy.ts                      # Next 16 middleware: Supabase session + admin route guard
+├── next.config.ts
+├── tsconfig.json
+└── .env.local                    # NEXT_PUBLIC_SUPABASE_URL, ANON_KEY, SUPABASE_SERVICE_KEY
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/portfolio-website-saas-cms.git
-   cd portfolio-website-saas-cms
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` with your Supabase credentials:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-4. **Set up Supabase**
-   - Create a new Supabase project
-   - Run the SQL scripts in `supabase/` folder:
-     - `schema.sql` - Creates database tables
-     - `seed.sql` - Adds sample data
-     - `storage-policies.sql` - Sets up storage buckets
-   - Create an admin user in Supabase Auth
-
-5. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
-
----
-
-## 📜 Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-
----
-
-## 🔐 Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `VITE_SUPABASE_URL` | Supabase project URL | Yes |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
-
----
-
-## 🗃️ Database Schema
-
-### Core Tables
-- `cms_hero` - Hero section content
-- `cms_about` - About page content
-- `cms_contact` - Contact information
-- `cms_resume_settings` - Active resume configuration
-
-### Collection Tables
-- `education` - Educational background
-- `skills` - Technical skills
-- `experience` - Work experience
-- `projects` - Portfolio projects
-- `publications` - Research publications
-- `certifications` - Professional certifications
-- `achievements` - Awards and achievements
-- `services` - Services offered
-- `blogs` - Blog posts
-- `testimonials` - Client testimonials
-- `clients` - Client logos and info
-- `resumes` - Resume files
-- `contact_messages` - Contact form submissions
-- `tech_stack_categories` - Technology categories
-
-### Storage Buckets
-- `images` - Profile photos, covers, logos
-- `documents` - PDFs, certificates
-- `resumes` - Resume files
-- `gallery` - Project gallery images
-
----
-
-## 🎯 Admin Access
-
-Navigate to `/admin/login` and sign in with your Supabase Auth credentials.
-
-**Admin Features:**
-- Edit all website content
-- Upload and manage media files
-- Set active resume for download
-- View and respond to contact messages
-- Manage blog posts
-
----
-
-## 🏗️ Build & Deployment
-
-### Build for Production
 ```bash
-npm run build
+# 1. Clone
+git clone https://github.com/mahedi-emon/portfolio-nextjs.git
+cd portfolio-nextjs
+
+# 2. Install
+npm install
+
+# 3. Env vars (.env.local)
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+SUPABASE_SERVICE_KEY=eyJhbGc...            # server-only
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+
+# 4. Dev
+npm run dev                                # http://localhost:3000
+
+# 5. Production build
+npm run build && npm run start
 ```
-
-The build output will be in the `dist/` folder with optimized chunks:
-- `vendor-react` - React libraries
-- `vendor-supabase` - Supabase client
-- `vendor-ui` - UI libraries (Lucide, Zod)
-- `index` - Application code
-
-### Deploy to Vercel
-```bash
-npm i -g vercel
-vercel
-```
-
-### Deploy to Netlify
-```bash
-npm i -g netlify-cli
-netlify deploy --prod
-```
-
-> **Note:** Remember to set environment variables in your deployment platform.
 
 ---
 
-## 🤝 Contributing
+## 🗃️ Supabase Schema
 
-Contributions are welcome! Please follow these steps:
+17 tables — 4 singletons + 13 collections:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+**Singletons:** `cms_hero`, `cms_about`, `cms_contact`, `cms_resume_settings`
 
-### Commit Convention
-This project uses [Conventional Commits](https://www.conventionalcommits.org/):
-- `feat:` New features
-- `fix:` Bug fixes
-- `docs:` Documentation changes
-- `style:` Code style changes
-- `refactor:` Code refactoring
-- `test:` Test additions/changes
-- `chore:` Maintenance tasks
+**Collections:** `education`, `skills`, `services`, `resumes`, `projects`, `publications`, `certifications`, `experience`, `blogs`, `testimonials`, `achievements`, `clients`, `tech_stack_categories`, `contact_messages`
+
+**Storage buckets:** `images`, `documents`, `resumes`, `gallery`
+
+Reserved-keyword renames handled by `lib/cms/mappers.ts`:
+- `about.current_role` ↔ `current_job_role`
+- `experience.role` ↔ `job_role`
+- `publications.year` ↔ `publication_year`
+- `achievements.year` ↔ `award_year`
 
 ---
 
+## 🔧 Available Scripts
 
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start Next.js dev server on `http://localhost:3000` |
+| `npm run build` | Production build (typecheck + bundle) |
+| `npm run start` | Serve production build |
+| `npm run lint` | ESLint |
+| `node --env-file=.env.local scripts/migrate-base64-to-storage.mjs` | One-time migration: legacy inline base64 → real Supabase Storage |
+
+---
+
+## 🌍 Deployment (Vercel)
+
+1. Push to GitHub
+2. Import to Vercel — auto-detects Next.js
+3. Add env vars in Vercel UI:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_KEY`
+   - `NEXT_PUBLIC_SITE_URL`
+4. Deploy
+
+---
 
 ## 👨‍💻 Author
 
-**Mahedi Hasan Emon**
+**Mahedi Hasan Emon** — Full-Stack Developer
 
-- GitHub: [@mahedi-emon](https://github.com/mahedi-emon)
-- LinkedIn: [Mahedi Hasan Emon](https://www.linkedin.com/in/mahediemon/)
-- Portfolio: [Website](https://mahedihasanemon.site/)
-
----
-
-## 🙏 Acknowledgments
-
-- [React](https://react.dev/) - UI Library
-- [Supabase](https://supabase.com/) - Backend as a Service
-- [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
-- [Vite](https://vitejs.dev/) - Build Tool
-- [Lucide](https://lucide.dev/) - Icon Library
+- 🌐 [mahedihasanemon.site](https://mahedihasanemon.site)
+- 🐙 [GitHub](https://github.com/mahedi-emon)
+- 💼 [LinkedIn](https://www.linkedin.com/in/mahediemon/)
 
 ---
 
-<p align="center">
-  Made with ❤️ using React & Supabase
-</p>
+<p align="center">Built with ❤️ using <b>Next.js + Supabase</b></p>

@@ -35,5 +35,9 @@ supabase/
 out/
 
 
-# Serena cache
-.serena/cache/
+# Serena (editor cache, not part of project)
+.serena/
+
+# Dev logs
+dev.log
+dev.err

@@ -67,7 +67,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html
+      lang="en"
+      className={inter.variable}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         {/* Resource hints for Supabase CDN (Hero image preload) */}
         <link
@@ -80,6 +85,7 @@ export default function RootLayout({
       <body
         className="font-sans antialiased text-[#C9D1D9]"
         style={{ backgroundColor: "#0B1320" }}
+        suppressHydrationWarning
       >
         {/* Animated background — persists across all routes */}
         <AuroraMesh variant="dark" />

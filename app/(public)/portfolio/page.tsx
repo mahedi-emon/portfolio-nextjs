@@ -53,10 +53,7 @@ export default async function PortfolioPage() {
                 className="group rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:border-white/[0.12] transition-all duration-600 ease-out hover:-translate-y-1 animate-fade-in"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
-                <Link
-                  href={`/portfolio/${project.slug}`}
-                  className="relative block h-56 overflow-hidden"
-                >
+                <div className="relative h-56 overflow-hidden">
                   {project.coverImageUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
@@ -81,7 +78,6 @@ export default async function PortfolioPage() {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 text-[#0B1320] text-sm font-medium hover:bg-white transition-colors"
                       >
                         <Code className="w-4 h-4" /> Code
@@ -92,14 +88,13 @@ export default async function PortfolioPage() {
                         href={project.liveDemoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#C77DFF] text-white text-sm font-medium hover:bg-[#9D4EDD] transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" /> Live
                       </a>
                     )}
                   </div>
-                </Link>
+                </div>
                 <div className="p-6">
                   <Link href={`/portfolio/${project.slug}`}>
                     <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#C77DFF] transition-colors">
@@ -108,7 +103,7 @@ export default async function PortfolioPage() {
                   </Link>
                   <p className="text-[#C9D1D9] line-clamp-2 mb-3">{project.summary}</p>
                   {project.techStack && project.techStack.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
+                    <div className="flex flex-wrap gap-1.5 mb-4">
                       {project.techStack.slice(0, 4).map((tech) => (
                         <span
                           key={tech}
@@ -124,6 +119,12 @@ export default async function PortfolioPage() {
                       )}
                     </div>
                   )}
+                  <Link
+                    href={`/portfolio/${project.slug}`}
+                    className="inline-flex items-center gap-1 text-[#C77DFF] text-sm font-medium hover:gap-2 transition-all"
+                  >
+                    View details <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </article>
             ))}

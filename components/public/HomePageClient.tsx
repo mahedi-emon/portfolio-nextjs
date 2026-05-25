@@ -545,10 +545,7 @@ export function HomePageClient({ data }: { data: HomeData }) {
                 className="group rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:border-white/[0.12] transition-all duration-600 ease-out hover:-translate-y-1"
               >
                 {project.coverImageUrl && (
-                  <Link
-                    href={`/portfolio/${project.slug}`}
-                    className="relative block h-56 overflow-hidden"
-                  >
+                  <div className="relative h-56 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -562,7 +559,6 @@ export function HomePageClient({ data }: { data: HomeData }) {
                           href={project.githubUrl}
                           target="_blank"
                           rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
                           className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 text-[#0B1320] text-sm font-medium hover:bg-white transition-colors"
                         >
                           <Code className="w-4 h-4" /> Code
@@ -573,22 +569,25 @@ export function HomePageClient({ data }: { data: HomeData }) {
                           href={project.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
                           className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#C77DFF] text-white text-sm font-medium hover:bg-[#9D4EDD] transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" /> Live Demo
                         </a>
                       )}
                     </div>
-                  </Link>
+                  </div>
                 )}
                 <div className="p-6">
-                  <Link href={`/portfolio/${project.slug}`}>
-                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#C77DFF] transition-colors">
-                      {project.title}
-                    </h3>
+                  <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#C77DFF] transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-[#C9D1D9] line-clamp-2 mb-3">{project.summary}</p>
+                  <Link
+                    href={`/portfolio/${project.slug}`}
+                    className="inline-flex items-center gap-1 text-[#C77DFF] text-sm font-medium hover:gap-2 transition-all"
+                  >
+                    View Project <ArrowRight className="w-4 h-4" />
                   </Link>
-                  <p className="text-[#C9D1D9] line-clamp-2">{project.summary}</p>
                 </div>
               </article>
             ))}
