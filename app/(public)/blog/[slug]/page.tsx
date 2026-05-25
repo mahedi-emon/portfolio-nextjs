@@ -3,13 +3,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, User as UserIcon } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
-import { getBlogBySlug } from "@/lib/cms/queries";
+import { getBlogBySlug, getBlogSlugs } from "@/lib/cms/queries";
 import { blogPostSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml, stripHtml, truncateHtml } from "@/lib/utils/sanitizeHtml";
 
 export const revalidate = 300;
 export const dynamicParams = true;
+
+/** Pre-render every published blog post at build time → static CDN HTML. */
+export async function generateStaticParams() {
+  const slugs = await getBlogSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({
   params,

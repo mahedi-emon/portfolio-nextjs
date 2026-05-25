@@ -3,13 +3,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Code, ExternalLink } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
-import { getProjectBySlug } from "@/lib/cms/queries";
+import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/queries";
 import { projectDetailSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml } from "@/lib/utils/sanitizeHtml";
 
 export const revalidate = 300;
 export const dynamicParams = true;
+
+/**
+ * Pre-render every published project at build time → static HTML on CDN.
+ * Uses the stateless public client (no cookies) so it works in this
+ * build-time context. New slugs added later are still rendered on-demand
+ * thanks to `dynamicParams = true`.
+ */
+export async function generateStaticParams() {
+  const slugs = await getProjectSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({
   params,
