@@ -386,11 +386,24 @@ body {
 .profile-card-hover.is-hovered .profile-shine { animation: profile-shine-sweep 0.75s ease-out forwards; }
 
 /* Gradient Text */
-.gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@layer utilities {
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animated multi-color text — overrides any sibling bg-gradient utility */
+  .text-shimmer {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4, #8b5cf6, #6366f1);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
 }
 
 /* Section Title underline */

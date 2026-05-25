@@ -60,7 +60,7 @@ export default async function HomePage() {
     getContact(),
     getServices(),
     getProjects(),
-    getBlogs(),
+    getBlogs({ limit: 3 }), // home shows only 3
     getTestimonials(),
     getClients(),
     getAchievements(),

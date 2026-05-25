@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AuroraMesh } from "@/components/common/AuroraMesh";
+import { GlobalLoader } from "@/components/common/GlobalLoader";
 import { Toaster } from "@/components/ui/Toaster";
 import { PAGE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/seo/keywords";
 import "./globals.css";
@@ -87,11 +88,19 @@ export default function RootLayout({
         style={{ backgroundColor: "#0B1320" }}
         suppressHydrationWarning
       >
+        {/* First-paint loading splash (morphing core + orbiting orbs) */}
+        <GlobalLoader />
+
         {/* Animated background — persists across all routes */}
         <AuroraMesh variant="dark" />
 
-        {/* Page content sits above the canvas */}
-        <div className="relative z-10">{children}</div>
+        {/*
+          Children render directly in body's stacking context, AFTER the
+          canvas in DOM order so they paint on top. Wrapping in a `z-10`
+          stacking context was making each page's decorative `-z-10` orbs
+          sit ABOVE the canvas instead of behind it.
+        */}
+        {children}
 
         {/* Toast host */}
         <Toaster />
