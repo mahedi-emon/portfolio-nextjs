@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { ContactPageClient } from "@/components/public/ContactPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getContact } from "@/lib/cms/queries";
 import { contactPageSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({

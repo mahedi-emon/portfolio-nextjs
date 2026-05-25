@@ -8,7 +8,7 @@ import { blogPostSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml, stripHtml, truncateHtml } from "@/lib/utils/sanitizeHtml";
 
-export const revalidate = 60;
+export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateMetadata({

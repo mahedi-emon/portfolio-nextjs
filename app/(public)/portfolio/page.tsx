@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { PortfolioPageClient } from "@/components/public/PortfolioPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import {
@@ -10,7 +10,7 @@ import {
 import { portfolioPageSchemas } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { AboutPageClient } from "@/components/public/AboutPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import {
@@ -12,7 +12,7 @@ import {
 import { aboutPageSchemas } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const about = await getAbout();

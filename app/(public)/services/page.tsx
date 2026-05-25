@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { ServicesPageClient } from "@/components/public/ServicesPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getServices } from "@/lib/cms/queries";
 import { servicesPageSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({

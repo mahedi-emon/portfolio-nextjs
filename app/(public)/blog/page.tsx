@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Calendar, Clock, Quote } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
@@ -6,7 +6,7 @@ import { getBlogs } from "@/lib/cms/queries";
 import { blogListSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({

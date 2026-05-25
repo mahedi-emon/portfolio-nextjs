@@ -1,9 +1,9 @@
-import { Header } from "@/components/public/Header";
+﻿import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
 import { ScrollToTop } from "@/components/common/ScrollToTop";
 import { getAbout, getContact, getHero } from "@/lib/cms/queries";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [hero, about, contact] = await Promise.all([getHero(), getAbout(), getContact()]);
