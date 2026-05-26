@@ -18,7 +18,19 @@ type Props = {
   submitLabel?: string;
   /** When true, auto-compute readTime from `content` (for blogs) */
   autoComputeReadTime?: boolean;
+  /** When true, auto-fill `slug` from `title` while slug is untouched */
+  autoSlug?: boolean;
 };
+
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
 
 type SocialLinkItem = { url: string; platform?: string; iconKey?: string };
 
@@ -117,15 +129,31 @@ export function EntityForm({
   onCancel,
   submitLabel = "Save",
   autoComputeReadTime,
+  autoSlug,
 }: Props) {
   const initialValues = useMemo(() => buildInitial(fields, initial), [fields, initial]);
   const [values, setValues] = useState<Record<string, unknown>>(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  // Slug is "untouched" until the user types in it manually — then we stop
+  // auto-filling so we don't clobber their edit.
+  const [slugTouched, setSlugTouched] = useState<boolean>(
+    Boolean(initial && String((initial as Record<string, unknown>).slug ?? "").trim()),
+  );
 
-  const change = (name: string, val: unknown) =>
-    setValues((prev) => setNested(prev, name, val));
+  const change = (name: string, val: unknown) => {
+    setValues((prev) => {
+      let next = setNested(prev, name, val);
+      // Auto-slug: when title changes and slug field hasn't been edited yet,
+      // mirror title -> slug. Only for schemas that include a `slug` field.
+      if (autoSlug && name === "title" && !slugTouched) {
+        next = setNested(next, "slug", slugify(String(val ?? "")));
+      }
+      return next;
+    });
+    if (name === "slug") setSlugTouched(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

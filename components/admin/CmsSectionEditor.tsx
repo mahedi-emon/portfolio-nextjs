@@ -12,9 +12,13 @@ import {
   Circle,
   AlertTriangle,
   X,
+  ChevronUp,
+  ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { EntityForm } from "./EntityForm";
+import { TechStackToolsEditor } from "./TechStackToolsEditor";
 import {
   createCollectionItem,
   deleteCollectionItem,
@@ -82,6 +86,8 @@ function CollectionEditor({
   const [confirmDelete, setConfirmDelete] = useState<Row | null>(null);
 
   const collectionKey = schema.key as CollectionKey;
+  const hasSlug = schema.fields.some((f) => f.name === "slug");
+  const hasOrderIndex = schema.fields.some((f) => f.name === "orderIndex");
 
   const filtered = items.filter((item) => {
     if (!search.trim()) return true;
@@ -95,14 +101,47 @@ function CollectionEditor({
       : null;
 
   const handleCreate = async (values: Record<string, unknown>) => {
+    // Auto-assign orderIndex = items.length so new items append to the bottom
+    const next = hasOrderIndex && !values.orderIndex
+      ? { ...values, orderIndex: items.length }
+      : values;
     await toast.promise(
       (async () => {
-        const created = await createCollectionItem(collectionKey, values);
-        setItems((prev) => [created as Row, ...prev]);
+        const created = await createCollectionItem(collectionKey, next);
+        setItems((prev) => [...prev, created as Row]);
         setMode("list");
       })(),
       { loading: "Creating…", success: "Created", error: (err) => (err instanceof Error ? err.message : "Create failed") },
     );
+  };
+
+  // Swap order_index between two adjacent items and persist both
+  const handleMove = async (id: string, direction: "up" | "down") => {
+    const idx = items.findIndex((i) => i.id === id);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= items.length) return;
+
+    const a = items[idx];
+    const b = items[swapIdx];
+    const aOrder = Number(a.orderIndex ?? idx);
+    const bOrder = Number(b.orderIndex ?? swapIdx);
+
+    const next = [...items];
+    next[idx] = { ...b, orderIndex: aOrder };
+    next[swapIdx] = { ...a, orderIndex: bOrder };
+    setItems(next);
+
+    try {
+      await Promise.all([
+        updateCollectionItem(collectionKey, a.id, { orderIndex: bOrder }),
+        updateCollectionItem(collectionKey, b.id, { orderIndex: aOrder }),
+      ]);
+    } catch (err) {
+      // Revert UI on failure
+      setItems(items);
+      toast.error(err instanceof Error ? err.message : "Reorder failed");
+    }
   };
 
   const handleUpdate = async (id: string, values: Record<string, unknown>) => {
@@ -167,6 +206,7 @@ function CollectionEditor({
             fields={schema.fields}
             initial={mode === "create" ? undefined : editingItem ?? undefined}
             autoComputeReadTime={autoComputeReadTime}
+            autoSlug={hasSlug}
             onSubmit={async (values) => {
               if (mode === "create") await handleCreate(values);
               else await handleUpdate(mode.id, values);
@@ -175,6 +215,26 @@ function CollectionEditor({
             submitLabel={mode === "create" ? "Create" : "Save changes"}
           />
         </div>
+
+        {/* Tech Stack: nested tools editor when editing an existing category */}
+        {collectionKey === "techStackCategories" &&
+          mode !== "create" &&
+          editingItem && (
+            <TechStackToolsEditor
+              categoryId={editingItem.id}
+              categoryName={String(editingItem.categoryName ?? "Category")}
+              initialTools={
+                (Array.isArray(editingItem.tools)
+                  ? (editingItem.tools as Array<{
+                      id: string;
+                      name: string;
+                      logoUrl: string | null;
+                      proficiencyLevel: number;
+                    }>)
+                  : []) ?? []
+              }
+            />
+          )}
       </div>
     );
   }
@@ -208,28 +268,52 @@ function CollectionEditor({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-16 text-center">
-          <p className="text-sm text-white/60">
-            {search
-              ? "No items match your search."
-              : `No ${schema.title.toLowerCase()} yet — click "New" to add one.`}
-          </p>
+        <div className="rounded-3xl border border-dashed border-white/15 bg-gradient-to-br from-[#0B1320]/40 via-transparent to-[#0B1320]/40 p-12 sm:p-16 text-center">
+          {search ? (
+            <p className="text-sm text-white/60">
+              No items match &ldquo;<span className="text-white">{search}</span>&rdquo;.
+            </p>
+          ) : (
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C77DFF]/20 to-[#9D4EDD]/20 border border-[#C77DFF]/30">
+                <Sparkles className="h-8 w-8 text-[#C77DFF]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">
+                  No {schema.title.toLowerCase()} yet
+                </h3>
+                <p className="text-sm text-white/60 max-w-md mx-auto">
+                  Add your first {schema.title.toLowerCase().replace(/s$/, "")} to see it on the public site.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMode("create")}
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#C77DFF]/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              >
+                <Plus className="h-4 w-4" />
+                Add first {schema.title.toLowerCase().replace(/s$/, "")}
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <ul className="space-y-2">
-          {filtered.map((item) => {
+          {filtered.map((item, idx) => {
             const status = (item.status as string) || "draft";
+            const isFirst = idx === 0;
+            const isLast = idx === filtered.length - 1;
             return (
               <li
                 key={item.id}
-                className="group flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#0B1320]/60 px-4 py-3 transition-all hover:border-[#C77DFF]/30 hover:bg-[#0B1320]/80"
+                className="group flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 rounded-xl border border-white/10 bg-[#0B1320]/60 px-3 sm:px-4 py-3 transition-all hover:border-[#C77DFF]/30 hover:bg-[#0B1320]/80"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     {status === "published" ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                     ) : (
-                      <Circle className="h-3.5 w-3.5 text-yellow-500/60" />
+                      <Circle className="h-3.5 w-3.5 text-yellow-500/60 flex-shrink-0" />
                     )}
                     <span className="truncate text-sm font-medium text-white">{getLabel(item)}</span>
                   </div>
@@ -239,24 +323,47 @@ function CollectionEditor({
                     </p>
                   ) : null}
                 </div>
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
-                    status === "published"
-                      ? "bg-emerald-500/15 text-emerald-300"
-                      : "bg-yellow-500/15 text-yellow-300",
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
+                      status === "published"
+                        ? "bg-emerald-500/15 text-emerald-300"
+                        : "bg-yellow-500/15 text-yellow-300",
+                    )}
+                  >
+                    {status}
+                  </span>
+                  {hasOrderIndex && !search.trim() && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleMove(item.id, "up")}
+                        disabled={isFirst}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/60 hover:border-[#C77DFF]/40 hover:text-[#C77DFF] disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="Move up"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMove(item.id, "down")}
+                        disabled={isLast}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/60 hover:border-[#C77DFF]/40 hover:text-[#C77DFF] disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="Move down"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </>
                   )}
-                >
-                  {status}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setMode({ type: "edit", id: item.id })}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/60 hover:border-[#C77DFF]/40 hover:text-[#C77DFF]"
-                  aria-label="Edit"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode({ type: "edit", id: item.id })}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/60 hover:border-[#C77DFF]/40 hover:text-[#C77DFF]"
+                    aria-label="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(item)}
@@ -270,6 +377,7 @@ function CollectionEditor({
                     <Trash2 className="h-4 w-4" />
                   )}
                 </button>
+                </div>
               </li>
             );
           })}
