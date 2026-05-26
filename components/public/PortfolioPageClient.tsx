@@ -147,16 +147,18 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    {/* Code + Live Demo — hidden until cursor enters the card (matches original Vite live-site behavior). */}
-                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                    {/* Code + Live Demo
+                        - Mobile/tablet: always visible (no hover)
+                        - Desktop: hidden by default, slide up + fade in on hover */}
+                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out">
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 text-[#0B1320] text-sm font-medium hover:bg-white transition-colors"
+                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#0B1320] text-xs font-semibold shadow-lg hover:scale-105 transition-transform"
                         >
-                          <Code className="w-4 h-4" /> Code
+                          <Code className="w-3.5 h-3.5" /> Code
                         </a>
                       )}
                       {project.liveDemoUrl && (
@@ -164,9 +166,9 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                           href={project.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C77DFF] text-white text-sm font-medium hover:bg-[#9D4EDD] transition-colors"
+                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] text-white text-xs font-semibold shadow-lg shadow-[#C77DFF]/40 hover:scale-105 transition-transform"
                         >
-                          <ExternalLink className="w-4 h-4" /> Live Demo
+                          <ExternalLink className="w-3.5 h-3.5" /> Live Demo
                         </a>
                       )}
                     </div>
