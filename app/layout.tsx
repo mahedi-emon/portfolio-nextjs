@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AuroraMesh } from "@/components/common/AuroraMesh";
+import { ExtensionErrorSuppressor } from "@/components/common/ExtensionErrorSuppressor";
 import { GlobalLoader } from "@/components/common/GlobalLoader";
 import { Toaster } from "@/components/ui/Toaster";
 import { PAGE_KEYWORDS, SITE_NAME, SITE_URL } from "@/lib/seo/keywords";
@@ -88,6 +89,9 @@ export default function RootLayout({
         style={{ backgroundColor: "#0B1320" }}
         suppressHydrationWarning
       >
+        {/* Swallow uncaught errors thrown by browser extensions (MetaMask, etc.) */}
+        <ExtensionErrorSuppressor />
+
         {/* First-paint loading splash (morphing core + orbiting orbs) */}
         <GlobalLoader />
 
