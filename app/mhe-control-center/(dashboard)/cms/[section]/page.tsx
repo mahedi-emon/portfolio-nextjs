@@ -54,12 +54,23 @@ export default async function CmsSectionPage({
     return <CmsSectionEditor schema={schema} initialData={initial} />;
   }
 
-  // collection
+  // collection — pick the right ordering column per schema
+  // Most collections have order_index. Resumes uses uploaded_at. Anything
+  // else we don't know about: fall back to created_at desc.
   const table = collectionToTable[section as keyof typeof collectionToTable];
-  const { data, error } = await supabase
-    .from(table)
-    .select("*")
-    .order("order_index", { ascending: true, nullsFirst: false });
+  const hasOrderIndex = schema.fields.some((f) => f.name === "orderIndex");
+  const hasUploadedAt = schema.fields.some((f) => f.name === "uploadedAt");
+
+  let query = supabase.from(table).select("*");
+  if (hasOrderIndex) {
+    query = query.order("order_index", { ascending: true, nullsFirst: false });
+  } else if (hasUploadedAt) {
+    query = query.order("uploaded_at", { ascending: false, nullsFirst: false });
+  } else {
+    query = query.order("created_at", { ascending: false, nullsFirst: false });
+  }
+
+  const { data, error } = await query;
   if (error) {
     console.error(`[admin/cms/${section}] collection fetch failed:`, error.message);
   }

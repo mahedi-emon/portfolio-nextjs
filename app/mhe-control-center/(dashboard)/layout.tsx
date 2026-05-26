@@ -11,17 +11,22 @@ import { ADMIN_LOGIN_PATH } from "@/lib/constants";
  */
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServerClient();
+  // proxy.ts already validated the session and redirected if missing.
+  // getSession() reads from the cookie store — no network round-trip,
+  // ~10ms vs ~150ms for getUser(). Significantly snappier nav between
+  // admin pages. getUser() is reserved for write endpoints where we
+  // need to re-verify the JWT.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect(ADMIN_LOGIN_PATH);
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) redirect(ADMIN_LOGIN_PATH);
 
   const [hero, about] = await Promise.all([getHero(), getAbout()]);
   const siteName = about?.fullName || hero?.fullName || "Admin";
 
   return (
     <AdminLayoutClient
-      userEmail={user.email ?? null}
+      userEmail={session.user.email ?? null}
       siteName={siteName}
       avatarUrl={about?.profileImageUrl ?? null}
     >
