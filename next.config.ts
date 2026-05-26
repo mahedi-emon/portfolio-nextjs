@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
     // Sizes we actually render — cuts the variant matrix Vercel generates
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Next 16 requires explicit quality whitelist for non-default values
+    qualities: [70, 75, 88, 90, 92],
   },
 
   // ─── Tree-shake heavy icon packages + tune router cache ────────────────
