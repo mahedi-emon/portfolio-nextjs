@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Mail, Calendar } from "lucide-react";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { ADMIN_PATH } from "@/lib/constants";
 import { MessageActions } from "@/components/admin/MessageActions";
 
@@ -13,13 +13,15 @@ export default async function MessageDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
-  const { data: message } = await supabase
+  // Service-role: dashboard layout already guards auth. Bypasses RLS.
+  const supabase = createSupabaseServiceRoleClient();
+  const { data: message, error } = await supabase
     .from("contact_messages")
     .select("*")
     .eq("id", id)
     .maybeSingle();
 
+  if (error) console.error("[admin/messages/:id] fetch failed:", error.message);
   if (!message) notFound();
 
   // Mark as read on open

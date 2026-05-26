@@ -10,11 +10,13 @@ import {
   ArrowUpRight,
   Eye,
 } from "lucide-react";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { ADMIN_PATH } from "@/lib/constants";
 
 export default async function DashboardPage() {
-  const supabase = await createSupabaseServerClient();
+  // Service-role: dashboard layout already guards auth. Bypasses RLS so
+  // counts never come back as 0 due to a missing read policy.
+  const supabase = createSupabaseServiceRoleClient();
 
   // Fan-out counts via parallel head selects
   const [

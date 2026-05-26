@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { Mail, Inbox } from "lucide-react";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { ADMIN_PATH } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
 export default async function MessagesPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
+  // Service-role: dashboard layout already guards auth. Bypasses RLS so
+  // the admin never sees an empty inbox due to a missing read policy.
+  const supabase = createSupabaseServiceRoleClient();
+  const { data, error } = await supabase
     .from("contact_messages")
     .select("id, name, email, subject, message, status, created_at")
     .order("created_at", { ascending: false });
+  if (error) console.error("[admin/messages] fetch failed:", error.message);
 
   const messages = data ?? [];
 
