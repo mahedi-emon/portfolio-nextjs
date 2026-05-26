@@ -608,7 +608,7 @@ export function HomePageClient({ data }: { data: HomeData }) {
               return (
                 <article
                   key={project.id}
-                  className="group relative rounded-3xl bg-[#0B1320]/85 backdrop-blur-sm border border-white/[0.08] shadow-xl shadow-[#C77DFF]/[0.08] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.25] hover:border-[#C77DFF]/40 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in"
+                  className="group relative rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-xl hover:shadow-[#C77DFF]/[0.15] hover:border-white/[0.12] hover:-translate-y-1 transition-all duration-600 ease-out animate-fade-in"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   {/* Cover image / carousel */}
@@ -636,14 +636,15 @@ export function HomePageClient({ data }: { data: HomeData }) {
                       </span>
                     </div>
 
-                    {/* Code + Live Demo buttons — always visible at bottom of image */}
-                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2">
+                    {/* Code + Live Demo buttons — hidden on desktop, revealed on hover.
+                        On mobile (no hover), always visible. */}
+                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-3 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out">
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 text-[#0B1320] text-sm font-semibold shadow-lg hover:bg-white hover:scale-105 transition-all"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-[#0B1320] text-sm font-semibold shadow-lg hover:scale-105 transition-transform"
                         >
                           <Code className="w-4 h-4" /> Code
                         </a>

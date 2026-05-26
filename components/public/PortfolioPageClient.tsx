@@ -123,8 +123,9 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                 className="group relative animate-fade-in"
                 style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.18] transition-all duration-600 ease-out" />
-                <div className="relative h-full bg-[#0B1320]/85 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:-translate-y-2 hover:border-[#C77DFF]/30 transition-all duration-500 ease-out flex flex-col">
+                {/* Subtle gradient glow ring — animates in on hover */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-0 group-hover:opacity-[0.15] transition-opacity duration-600 ease-out pointer-events-none" />
+                <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.15] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out flex flex-col">
                   <div className="relative h-56 overflow-hidden">
                     {allImages.length > 0 ? (
                       <ProjectCardCarousel images={allImages} alt={project.title} />
@@ -146,14 +147,15 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    {/* Always-visible Code + Live Demo buttons */}
-                    <div className="absolute bottom-3 left-3 right-3 z-20 flex flex-wrap gap-2">
+                    {/* Code + Live Demo — hidden on desktop, revealed on hover.
+                        On mobile (no hover), always visible. */}
+                    <div className="absolute bottom-3 left-3 right-3 z-20 flex flex-wrap gap-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-3 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out">
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-[#0B1320] text-xs font-semibold shadow-lg hover:bg-white hover:scale-105 transition-all"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-[#0B1320] text-xs font-semibold shadow-lg hover:scale-105 transition-transform"
                         >
                           <Code className="w-3.5 h-3.5" /> Code
                         </a>
