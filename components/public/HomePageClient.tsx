@@ -13,6 +13,13 @@ import {
   Sparkles,
   Zap,
   Rocket,
+  Star,
+  CheckCircle2,
+  FileText,
+  Calendar,
+  Clock,
+  Image as ImageIcon,
+  Layers,
 } from "lucide-react";
 import { ResumeViewerModal } from "@/components/common/ResumeViewerModal";
 import { CertificateModal } from "@/components/common/CertificateModal";
@@ -498,11 +505,11 @@ export function HomePageClient({ data }: { data: HomeData }) {
             {services.slice(0, 6).map((service, index) => (
               <article
                 key={service.id}
-                className="group relative rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:border-[#C77DFF]/30 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in"
+                className="group relative rounded-3xl bg-[#0B1320]/85 backdrop-blur-sm border border-white/[0.08] shadow-xl shadow-[#C77DFF]/[0.08] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.25] hover:border-[#C77DFF]/40 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col"
                 style={{ animationDelay: `${index * 80}ms` }}
               >
                 {service.imageUrl ? (
-                  <div className="relative w-full h-48 overflow-hidden">
+                  <div className="relative w-full h-56 overflow-hidden">
                     <Image
                       src={service.imageUrl}
                       alt={service.title}
@@ -512,29 +519,41 @@ export function HomePageClient({ data }: { data: HomeData }) {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/40 to-transparent" />
-                    <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-[#0B1320]/80 backdrop-blur-sm border border-[#C77DFF]/30">
-                      <span className="text-[10px] font-bold text-[#C77DFF]">0{index + 1}</span>
+                    <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-[#C77DFF]/30 shadow-lg">
+                      <span className="text-[11px] font-bold text-[#C77DFF]">0{index + 1}</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="relative w-full h-48 bg-gradient-to-br from-[#C77DFF]/10 via-[#0B1320] to-[#9D4EDD]/10 flex items-center justify-center overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#C77DFF]/30 to-transparent rounded-full -translate-y-12 translate-x-12 group-hover:scale-150 transition-transform duration-700" />
-                    <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-xl shadow-[#C77DFF]/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                      <Zap className="w-8 h-8 text-white" />
+                  <div className="relative w-full h-56 bg-gradient-to-br from-[#C77DFF]/20 via-[#0B1320] to-[#9D4EDD]/20 flex items-center justify-center overflow-hidden border-b border-white/5">
+                    {/* Animated decorative blobs */}
+                    <div className="absolute inset-0 opacity-60">
+                      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#C77DFF]/30 rounded-full blur-3xl animate-pulse" />
+                      <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#9D4EDD]/40 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
                     </div>
-                    <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-[#0B1320]/80 backdrop-blur-sm border border-[#C77DFF]/30">
-                      <span className="text-[10px] font-bold text-[#C77DFF]">0{index + 1}</span>
+                    {/* Spinning ring */}
+                    <div
+                      className="absolute w-32 h-32 rounded-full opacity-50"
+                      style={{
+                        background: "conic-gradient(from 0deg, #C77DFF, transparent, #9D4EDD, transparent, #C77DFF)",
+                        animation: "spin 8s linear infinite",
+                      }}
+                    />
+                    <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-2xl shadow-[#C77DFF]/40 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                      <Zap className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-[#C77DFF]/30 shadow-lg">
+                      <span className="text-[11px] font-bold text-[#C77DFF]">0{index + 1}</span>
                     </div>
                   </div>
                 )}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#C77DFF] transition-colors">
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#C77DFF] transition-colors leading-tight">
                     {service.title}
                   </h3>
-                  <p className="text-[#C9D1D9] leading-relaxed line-clamp-3 mb-5">{service.summary}</p>
+                  <p className="text-[#C9D1D9] leading-relaxed line-clamp-3 mb-5 flex-1">{service.summary}</p>
                   <Link
                     href="/services"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#C77DFF] group-hover:gap-3 transition-all"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#C77DFF] group-hover:gap-3 transition-all pt-3 border-t border-white/10 mt-auto"
                   >
                     Learn more <ArrowRight className="w-4 h-4" />
                   </Link>
@@ -583,59 +602,89 @@ export function HomePageClient({ data }: { data: HomeData }) {
 
           <div className="grid md:grid-cols-2 gap-8">
             {featuredProjects.slice(0, 4).map((project, idx) => {
-              const galleryCount = project.galleryImages?.length ?? 0;
+              const gallery = project.galleryImages ?? [];
+              const allImages = project.coverImageUrl
+                ? [project.coverImageUrl, ...gallery]
+                : gallery;
+              const totalImageCount = allImages.length;
               return (
                 <article
                   key={project.id}
-                  className="group rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.20] hover:border-[#C77DFF]/30 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in"
+                  className="group relative rounded-3xl bg-[#0B1320]/85 backdrop-blur-sm border border-white/[0.08] shadow-xl shadow-[#C77DFF]/[0.08] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.25] hover:border-[#C77DFF]/40 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
+                  {/* Cover image — 320px tall, dramatic */}
                   {project.coverImageUrl ? (
-                    <div className="relative h-64 overflow-hidden">
+                    <div className="relative h-80 overflow-hidden">
                       <Image
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                         src={project.coverImageUrl}
                         alt={project.title}
                         fill
-                        quality={88}
+                        quality={90}
                         sizes="(min-width: 768px) 50vw, 100vw"
+                        priority={idx < 2}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/30 to-transparent" />
+                      {/* Dark gradient for legibility */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/40 to-transparent" />
 
-                      {/* Multi-image strip preview on hover */}
-                      {galleryCount > 0 && (
-                        <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B1320]/80 backdrop-blur-sm border border-white/15 opacity-90 group-hover:bg-[#C77DFF]/20 group-hover:border-[#C77DFF]/50 transition-all">
-                          <Sparkles className="w-3 h-3 text-[#C77DFF]" />
-                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-                            +{galleryCount} more
+                      {/* Featured badge — always visible */}
+                      <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/40">
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                          Featured
+                        </span>
+                      </div>
+
+                      {/* Image count badge — always visible */}
+                      {totalImageCount > 1 && (
+                        <div className="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-white/20">
+                          <ImageIcon className="w-3.5 h-3.5 text-[#C77DFF]" />
+                          <span className="text-[10px] font-bold text-white">
+                            {totalImageCount} images
                           </span>
                         </div>
                       )}
 
-                      {/* Gallery thumb row revealed on hover */}
-                      {galleryCount > 0 && (
-                        <div className="absolute top-16 left-4 flex gap-1.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-                          {project.galleryImages!.slice(0, 3).map((img, i) => (
+                      {/* Always-visible gallery thumbnail strip at bottom-left of image */}
+                      {gallery.length > 0 && (
+                        <div className="absolute bottom-4 left-4 flex gap-1.5">
+                          {gallery.slice(0, 4).map((img, i) => (
                             <div
                               key={i}
-                              className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-white/40 shadow-lg"
+                              className="relative w-14 h-14 rounded-lg overflow-hidden border-2 border-white/50 shadow-xl ring-2 ring-[#0B1320] transition-transform duration-300 hover:scale-110"
                             >
-                              <Image src={img} alt="" fill quality={70} sizes="48px" className="object-cover" />
+                              <Image
+                                src={img}
+                                alt=""
+                                fill
+                                quality={70}
+                                sizes="56px"
+                                className="object-cover"
+                              />
                             </div>
                           ))}
+                          {gallery.length > 4 && (
+                            <div className="relative w-14 h-14 rounded-lg overflow-hidden border-2 border-white/50 shadow-xl ring-2 ring-[#0B1320] bg-[#C77DFF]/20 backdrop-blur flex items-center justify-center">
+                              <span className="text-[11px] font-bold text-white">
+                                +{gallery.length - 4}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
 
-                      {/* Action buttons */}
-                      <div className="absolute bottom-4 left-4 right-4 flex gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                      {/* Live action buttons — always visible bottom-right */}
+                      <div className="absolute bottom-4 right-4 flex gap-2">
                         {project.githubUrl && (
                           <a
                             href={project.githubUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 text-[#0B1320] text-sm font-semibold hover:bg-white transition-colors"
+                            aria-label="View code"
+                            className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-[#0B1320] transition-all hover:scale-110"
                           >
-                            <Code className="w-4 h-4" /> Code
+                            <Code className="w-4 h-4" />
                           </a>
                         )}
                         {project.liveDemoUrl && (
@@ -643,50 +692,78 @@ export function HomePageClient({ data }: { data: HomeData }) {
                             href={project.liveDemoUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] text-white text-sm font-semibold shadow-lg shadow-[#C77DFF]/30 hover:shadow-xl transition-shadow"
+                            aria-label="Live demo"
+                            className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] text-white shadow-lg shadow-[#C77DFF]/40 hover:scale-110 transition-transform"
                           >
-                            <ExternalLink className="w-4 h-4" /> Live Demo
+                            <ExternalLink className="w-4 h-4" />
                           </a>
                         )}
                       </div>
                     </div>
                   ) : (
-                    <div className="relative h-64 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center">
-                      <Code className="w-16 h-16 text-[#C77DFF]/50" />
+                    <div className="relative h-80 bg-gradient-to-br from-[#C77DFF]/20 via-[#0B1320] to-[#9D4EDD]/20 flex items-center justify-center overflow-hidden">
+                      <div className="absolute inset-0 opacity-40">
+                        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-[#C77DFF]/20 rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-[#9D4EDD]/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+                      </div>
+                      <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg">
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">Featured</span>
+                      </div>
+                      <div className="relative z-10 w-24 h-24 rounded-3xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-2xl shadow-[#C77DFF]/40">
+                        <Code className="w-12 h-12 text-white" />
+                      </div>
                     </div>
                   )}
 
                   <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-white group-hover:text-[#C77DFF] transition-colors">
+                    <h3 className="text-2xl font-bold text-white group-hover:text-[#C77DFF] transition-colors leading-tight">
                       {project.title}
                     </h3>
-                    <p className="text-[#C9D1D9] line-clamp-2 text-sm leading-relaxed">{project.summary}</p>
+                    <p className="text-[#C9D1D9] line-clamp-2 text-sm leading-relaxed">
+                      {project.summary}
+                    </p>
 
                     {/* Tech stack pills */}
                     {project.techStack && project.techStack.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
-                        {project.techStack.slice(0, 4).map((tech) => (
+                        {project.techStack.slice(0, 5).map((tech) => (
                           <span
                             key={tech}
-                            className="px-2.5 py-0.5 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/20 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
+                            className="px-2.5 py-1 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/25 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
                           >
                             {tech}
                           </span>
                         ))}
-                        {project.techStack.length > 4 && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-semibold text-white/60">
-                            +{project.techStack.length - 4}
+                        {project.techStack.length > 5 && (
+                          <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-semibold text-white/60">
+                            +{project.techStack.length - 5}
                           </span>
                         )}
                       </div>
                     )}
 
-                    <Link
-                      href={`/portfolio/${project.slug}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#C77DFF] hover:gap-2.5 transition-all"
-                    >
-                      View Case Study <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {/* Stats line */}
+                    <div className="flex items-center gap-4 pt-3 border-t border-white/10 text-xs text-white/50">
+                      {totalImageCount > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <Layers className="w-3.5 h-3.5 text-[#C77DFF]" />
+                          {totalImageCount} {totalImageCount === 1 ? "image" : "images"}
+                        </span>
+                      )}
+                      {project.techStack && project.techStack.length > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <Code className="w-3.5 h-3.5 text-[#C77DFF]" />
+                          {project.techStack.length} technologies
+                        </span>
+                      )}
+                      <Link
+                        href={`/portfolio/${project.slug}`}
+                        className="ml-auto inline-flex items-center gap-1 text-[#C77DFF] font-semibold hover:gap-2 transition-all"
+                      >
+                        Case study <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );
@@ -733,36 +810,66 @@ export function HomePageClient({ data }: { data: HomeData }) {
             {blogs.slice(0, 3).map((post, idx) => (
               <article
                 key={post.id}
-                className="group rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:border-[#C77DFF]/30 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col"
+                className="group rounded-3xl bg-[#0B1320]/85 backdrop-blur-sm border border-white/[0.08] shadow-xl shadow-[#C77DFF]/[0.08] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.25] hover:border-[#C77DFF]/40 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
+                {/* Header — always renders, 208px tall */}
                 {post.coverImageUrl ? (
-                  <div className="relative w-full h-44 overflow-hidden">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="relative block w-full h-52 overflow-hidden"
+                  >
                     <Image
                       src={post.coverImageUrl}
                       alt={post.title}
                       fill
-                      quality={88}
+                      quality={90}
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320]/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/30 to-transparent" />
                     {post.readTime ? (
-                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                      <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-white/20">
+                        <Clock className="w-3 h-3 text-[#C77DFF]" />
                         <span className="text-[10px] font-bold text-white">{post.readTime} min read</span>
                       </div>
                     ) : null}
-                  </div>
+                    {/* Article badge */}
+                    <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg">
+                      <FileText className="w-3 h-3 text-white" />
+                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">Article</span>
+                    </div>
+                  </Link>
                 ) : (
-                  <div className="relative w-full h-44 bg-gradient-to-br from-[#9D4EDD]/10 via-[#0B1320] to-[#C77DFF]/10 flex items-center justify-center overflow-hidden border-b border-white/5">
-                    <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#C77DFF] to-[#9D4EDD]" />
-                    <Quote className="w-14 h-14 text-[#C77DFF]/40" />
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="relative block w-full h-52 bg-gradient-to-br from-[#9D4EDD]/25 via-[#0B1320] to-[#C77DFF]/25 overflow-hidden border-b border-white/10"
+                  >
+                    {/* Decorative animated blobs */}
+                    <div className="absolute inset-0 opacity-60">
+                      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-[#C77DFF]/30 rounded-full blur-3xl animate-pulse" />
+                      <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-[#9D4EDD]/40 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
+                    </div>
+                    {/* Left accent bar */}
+                    <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[#C77DFF] to-[#9D4EDD]" />
+                    {/* Large quote mark */}
+                    <div className="relative h-full flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-2xl shadow-[#C77DFF]/40 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                        <Quote className="w-10 h-10 text-white" />
+                      </div>
+                    </div>
+                    {/* Article badge */}
+                    <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg">
+                      <FileText className="w-3 h-3 text-white" />
+                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">Article</span>
+                    </div>
                     {post.readTime ? (
-                      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                      <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#0B1320]/85 backdrop-blur-md border border-white/20">
+                        <Clock className="w-3 h-3 text-[#C77DFF]" />
                         <span className="text-[10px] font-bold text-white">{post.readTime} min read</span>
                       </div>
                     ) : null}
-                  </div>
+                  </Link>
                 )}
 
                 <div className="p-6 flex-1 flex flex-col">
@@ -771,20 +878,27 @@ export function HomePageClient({ data }: { data: HomeData }) {
                       {post.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/20 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
+                          className="px-2.5 py-1 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/25 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
                   )}
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-[#C9D1D9] text-sm line-clamp-3 mb-4 flex-1">{post.excerpt}</p>
+                  <Link href={`/blog/${post.slug}`}>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors line-clamp-2 leading-snug">
+                      {post.title}
+                    </h3>
+                  </Link>
+                  {post.excerpt && (
+                    <p className="text-[#C9D1D9] text-sm line-clamp-3 mb-4 flex-1 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                  )}
                   <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-auto">
                     {post.publishedDate ? (
-                      <span className="text-xs text-white/50">
+                      <span className="inline-flex items-center gap-1 text-xs text-white/50">
+                        <Calendar className="w-3 h-3" />
                         {new Date(post.publishedDate).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -827,51 +941,70 @@ export function HomePageClient({ data }: { data: HomeData }) {
             {testimonials.slice(0, 6).map((item, idx) => (
               <blockquote
                 key={item.id}
-                className="group relative p-8 pt-12 rounded-3xl bg-gradient-to-br from-[#0B1320]/90 via-[#0B1320]/80 to-[#0B1320]/90 backdrop-blur-sm border border-white/[0.08] shadow-lg shadow-[#C77DFF]/[0.05] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:border-[#C77DFF]/30 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col"
+                className="group relative p-8 pt-20 rounded-3xl bg-gradient-to-br from-[#1a1f35]/80 via-[#0B1320]/90 to-[#0B1320] backdrop-blur-sm border border-white/[0.1] shadow-xl shadow-[#C77DFF]/[0.08] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.22] hover:border-[#C77DFF]/40 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col overflow-hidden"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
-                {/* Decorative oversized quote mark */}
-                <div className="absolute -top-2 left-6 text-7xl font-serif leading-none text-[#C77DFF]/40 group-hover:text-[#C77DFF]/70 transition-colors select-none">
+                {/* Decorative quote — HUGE, gradient, top-right */}
+                <div className="absolute -top-6 -right-2 text-[180px] font-serif leading-none text-transparent bg-gradient-to-br from-[#C77DFF]/30 to-[#9D4EDD]/10 bg-clip-text select-none pointer-events-none">
                   &ldquo;
                 </div>
 
-                {/* Glow */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#C77DFF]/15 to-transparent rounded-full -translate-y-12 translate-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                {/* Animated glow on hover */}
+                <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-[#C77DFF]/20 to-transparent rounded-full -translate-y-16 -translate-x-16 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
 
-                <p className="relative text-base text-[#C9D1D9] leading-relaxed mb-6 flex-1 italic">
-                  {item.quote}
+                {/* 5-star rating */}
+                <div className="relative flex items-center gap-0.5 mb-5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 text-[#FFB800] fill-[#FFB800] drop-shadow-[0_0_4px_rgba(255,184,0,0.5)]"
+                    />
+                  ))}
+                  <span className="ml-2 text-xs font-semibold text-white/60">5.0</span>
+                </div>
+
+                <p className="relative text-base text-white leading-relaxed mb-6 flex-1 font-medium">
+                  &ldquo;{item.quote}&rdquo;
                 </p>
 
                 <footer className="relative flex items-center gap-4 pt-5 border-t border-white/10">
                   {item.avatarUrl ? (
-                    <div className="relative">
-                      <div className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] opacity-60 group-hover:opacity-100 blur-sm transition-opacity" />
+                    <div className="relative flex-shrink-0">
+                      <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] opacity-80 blur-sm" />
                       <Image
                         src={item.avatarUrl}
                         alt={item.author}
-                        width={52}
-                        height={52}
+                        width={56}
+                        height={56}
                         quality={88}
-                        sizes="52px"
-                        className="relative w-13 h-13 w-[52px] h-[52px] rounded-full object-cover border-2 border-[#0B1320]"
+                        sizes="56px"
+                        className="relative w-14 h-14 rounded-full object-cover border-2 border-[#0B1320]"
                       />
+                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] border-2 border-[#0B1320] flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
+                      </div>
                     </div>
                   ) : (
-                    <div className="relative">
-                      <div className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] opacity-60 group-hover:opacity-100 blur-sm transition-opacity" />
-                      <div className="relative w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center text-white font-bold text-lg border-2 border-[#0B1320]">
+                    <div className="relative flex-shrink-0">
+                      <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] opacity-80 blur-sm" />
+                      <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center text-white font-bold text-xl border-2 border-[#0B1320] shadow-lg">
                         {item.author?.charAt(0).toUpperCase() ?? "A"}
+                      </div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] border-2 border-[#0B1320] flex items-center justify-center">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-white truncate">{item.author}</div>
-                    {(item.role || item.company) && (
-                      <div className="text-xs text-[#C77DFF]/80 truncate">
+                    <div className="font-bold text-white truncate text-base">{item.author}</div>
+                    {(item.role || item.company) ? (
+                      <div className="text-xs text-[#C77DFF] truncate font-medium mt-0.5">
                         {item.role}
-                        {item.role && item.company && <span className="text-white/30 mx-1">·</span>}
-                        {item.company && <span className="text-[#C9D1D9]/70">{item.company}</span>}
+                        {item.role && item.company && <span className="text-white/40 mx-1.5">·</span>}
+                        {item.company && <span className="text-[#C9D1D9]">{item.company}</span>}
                       </div>
+                    ) : (
+                      <div className="text-xs text-[#C9D1D9]/60 mt-0.5">Verified Client</div>
                     )}
                   </div>
                 </footer>
