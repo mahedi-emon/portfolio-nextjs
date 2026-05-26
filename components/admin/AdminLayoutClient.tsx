@@ -187,7 +187,7 @@ export function AdminLayoutClient({ userEmail, siteName, avatarUrl, children }: 
         </nav>
       </aside>
 
-      <div className={cn("transition-all duration-300", collapsed ? "lg:ml-20" : "lg:ml-72")}>
+      <div className={cn("relative z-10 transition-all duration-300", collapsed ? "lg:ml-20" : "lg:ml-72")}>
         <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-white/10 bg-[#0B1320]/90 backdrop-blur-xl px-4 sm:px-6">
           <button
             type="button"
@@ -258,7 +258,7 @@ export function AdminLayoutClient({ userEmail, siteName, avatarUrl, children }: 
           </div>
         </header>
 
-        <main className="p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-5rem)]">{children}</main>
+        <main className="relative z-10 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-5rem)]">{children}</main>
       </div>
     </div>
   );
