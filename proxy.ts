@@ -1,7 +1,7 @@
 /**
  * Next.js 16 proxy (formerly known as middleware).
  *
- * Runs on every matched request:
+ * Runs ONLY on admin routes — public pages do not pay the auth overhead.
  * - Refreshes the Supabase auth session (rotates expiring tokens)
  * - Guards admin dashboard routes — redirects to login if unauthenticated
  */
@@ -14,5 +14,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // Only run on admin paths. Public pages (/, /about, /blog, etc.) skip
+  // the auth round-trip entirely — massive perf win.
+  matcher: ["/mhe-control-center/:path*"],
 };

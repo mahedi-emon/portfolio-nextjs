@@ -35,20 +35,34 @@ function LoginInner() {
       return;
     }
     setLoading(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
-      const msg = friendlyAuthError(signInError.message);
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signInError) {
+        const msg = friendlyAuthError(signInError.message);
+        setError(msg);
+        toast.error(msg);
+        return;
+      }
+      toast.success("Welcome back!");
+      router.push(next);
+      router.refresh();
+    } catch (err) {
+      // Browser extensions (1Password, MetaMask, etc.) sometimes wrap
+      // window.fetch and throw TypeError. Surface a friendly message instead
+      // of leaking the raw extension stack trace into the UI.
+      const raw = err instanceof Error ? err.message : "Network error";
+      const isFetchFail = raw.toLowerCase().includes("failed to fetch");
+      const msg = isFetchFail
+        ? "Cannot reach the server. If you have 1Password or a wallet extension, try disabling it on localhost or use incognito."
+        : "Sign-in failed. Please try again.";
       setError(msg);
       toast.error(msg);
-      return;
+    } finally {
+      setLoading(false);
     }
-    toast.success("Welcome back!");
-    router.push(next);
-    router.refresh();
   };
 
   return (
