@@ -16,6 +16,7 @@ import {
   Inbox,
   ArrowRight,
 } from "lucide-react";
+import { ProjectCardCarousel } from "@/components/public/ProjectCardCarousel";
 import { CertificateModal } from "@/components/common/CertificateModal";
 import type {
   Achievement,
@@ -112,7 +113,10 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
       {activeTab === "projects" && projects.length > 0 && (
         <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => {
-            const galleryCount = project.galleryImages?.length ?? 0;
+            const gallery = project.galleryImages ?? [];
+            const allImages = project.coverImageUrl
+              ? [project.coverImageUrl, ...gallery]
+              : gallery;
             return (
               <article
                 key={project.id}
@@ -121,36 +125,51 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
               >
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.18] transition-all duration-600 ease-out" />
                 <div className="relative h-full bg-[#0B1320]/85 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:-translate-y-2 hover:border-[#C77DFF]/30 transition-all duration-500 ease-out flex flex-col">
-                  {project.coverImageUrl ? (
-                    <div className="relative h-52 overflow-hidden img-hover-shine">
-                      <Image
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        src={project.coverImageUrl}
-                        alt={project.title}
-                        fill
-                        quality={88}
-                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320]/80 via-transparent to-transparent" />
+                  <div className="relative h-56 overflow-hidden">
+                    {allImages.length > 0 ? (
+                      <ProjectCardCarousel images={allImages} alt={project.title} />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center">
+                        <FolderKanban className="w-16 h-16 text-[#C77DFF]/50 animate-bounce-subtle" />
+                      </div>
+                    )}
 
-                      {project.featured && (
-                        <div className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/30">
-                          <Sparkles className="w-3 h-3 text-white" />
-                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">Featured</span>
-                        </div>
+                    {/* Dark gradient overlay so buttons stay readable */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/20 to-transparent pointer-events-none z-10" />
+
+                    {project.featured && (
+                      <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/30">
+                        <Sparkles className="w-3 h-3 text-white" />
+                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                          Featured
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Always-visible Code + Live Demo buttons */}
+                    <div className="absolute bottom-3 left-3 right-3 z-20 flex flex-wrap gap-2">
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-[#0B1320] text-xs font-semibold shadow-lg hover:bg-white hover:scale-105 transition-all"
+                        >
+                          <Code className="w-3.5 h-3.5" /> Code
+                        </a>
                       )}
-
-                      {galleryCount > 0 && (
-                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
-                          <span className="text-[10px] font-bold text-white">+{galleryCount} images</span>
-                        </div>
+                      {project.liveDemoUrl && (
+                        <a
+                          href={project.liveDemoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] text-white text-xs font-semibold shadow-lg shadow-[#C77DFF]/40 hover:scale-105 transition-transform"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                        </a>
                       )}
                     </div>
-                  ) : (
-                    <div className="h-52 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center">
-                      <FolderKanban className="w-16 h-16 text-[#C77DFF]/50 animate-bounce-subtle" />
-                    </div>
-                  )}
+                  </div>
 
                   <div className="p-6 flex-1 flex flex-col">
                     <h2 className="text-lg font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors line-clamp-2">
@@ -176,37 +195,13 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-3 pt-4 border-t border-white/10 mt-auto">
+                    <div className="flex items-center justify-end pt-4 border-t border-white/10 mt-auto">
                       <Link
                         href={`/portfolio/${project.slug}`}
                         className="inline-flex items-center gap-1 text-sm text-[#C77DFF] font-semibold hover:gap-2 transition-all"
                       >
                         Case study <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
-                      <div className="ml-auto flex items-center gap-3">
-                        {project.githubUrl && (
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="View code"
-                            className="text-white/60 hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all"
-                          >
-                            <Code className="w-4 h-4" />
-                          </a>
-                        )}
-                        {project.liveDemoUrl && (
-                          <a
-                            href={project.liveDemoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Live demo"
-                            className="text-white/60 hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>
