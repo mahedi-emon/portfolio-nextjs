@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Calendar, Clock, Quote } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Quote, Sparkles } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getBlogs } from "@/lib/cms/queries";
 import { blogListSchema } from "@/lib/seo/jsonld";
@@ -26,10 +27,20 @@ export default async function BlogPage() {
       <JsonLd data={blogListSchema(blogs)} />
 
       <div className="space-y-16 pb-16">
-        <section className="text-center pt-8">
+        <section className="relative pt-8 text-center overflow-hidden">
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-0 left-1/3 w-96 h-96 bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] rounded-full opacity-10 blur-3xl animate-morph floating" />
+            <div className="absolute bottom-0 right-1/3 w-72 h-72 bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] rounded-full opacity-10 blur-3xl animate-morph floating-delayed" />
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B1320]/60 border border-white/10 mb-6 animate-slide-in-left">
+            <Sparkles className="w-4 h-4 text-[#C77DFF] animate-spin-slow" />
+            <span className="text-sm font-medium text-[#C77DFF]">Insights & Tutorials</span>
+          </div>
+
           <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-white animate-fade-in">
             Latest{" "}
-            <span className="bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#C77DFF] via-[#E0AAFF] to-[#9D4EDD] bg-clip-text text-transparent text-shimmer">
               Articles
             </span>
           </h1>
@@ -47,53 +58,71 @@ export default async function BlogPage() {
               return (
                 <article
                   key={blog.id}
-                  className="group p-6 rounded-3xl bg-[#0B1320]/80 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:border-white/[0.12] transition-all duration-600 ease-out hover:-translate-y-1 animate-fade-in"
+                  className="group rounded-3xl bg-[#0B1320]/85 backdrop-blur-sm border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] overflow-hidden hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:border-[#C77DFF]/30 hover:-translate-y-2 transition-all duration-500 ease-out animate-fade-in flex flex-col"
                   style={{ animationDelay: `${i * 80}ms` }}
                 >
                   {blog.coverImageUrl ? (
                     <Link
                       href={`/blog/${blog.slug}`}
-                      className="block w-full h-40 rounded-2xl overflow-hidden mb-5 border border-white/10"
+                      className="relative block w-full h-48 overflow-hidden"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={blog.coverImageUrl}
                         alt={blog.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        quality={88}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320]/80 via-transparent to-transparent" />
+                      {blog.readTime ? (
+                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                          <span className="text-[10px] font-bold text-white inline-flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {blog.readTime} min
+                          </span>
+                        </div>
+                      ) : null}
                     </Link>
                   ) : (
-                    <div className="w-12 h-12 rounded-2xl bg-[#C77DFF]/10 border border-[#C77DFF]/15 flex items-center justify-center mb-5 group-hover:bg-[#C77DFF]/15 group-hover:border-[#C77DFF]/25 transition-all">
-                      <Quote className="w-5 h-5 text-[#C77DFF]" />
+                    <div className="relative w-full h-48 bg-gradient-to-br from-[#9D4EDD]/15 via-[#0B1320] to-[#C77DFF]/15 flex items-center justify-center overflow-hidden border-b border-white/5">
+                      <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#C77DFF] to-[#9D4EDD]" />
+                      <Quote className="w-16 h-16 text-[#C77DFF]/40" />
+                      {blog.readTime ? (
+                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                          <span className="text-[10px] font-bold text-white inline-flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {blog.readTime} min
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   )}
 
-                  {blog.tags && blog.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {blog.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-[#C77DFF]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#C77DFF]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  <div className="p-6 flex-1 flex flex-col">
+                    {blog.tags && blog.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {blog.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/20 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-                  <Link href={`/blog/${blog.slug}`}>
-                    <h3 className="text-lg font-semibold text-white mb-3 group-hover:text-[#C77DFF] transition-colors">
-                      {blog.title}
-                    </h3>
-                  </Link>
-                  {blog.excerpt && (
-                    <p className="text-[#C9D1D9] text-sm line-clamp-3">{blog.excerpt}</p>
-                  )}
+                    <Link href={`/blog/${blog.slug}`}>
+                      <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors line-clamp-2">
+                        {blog.title}
+                      </h3>
+                    </Link>
+                    {blog.excerpt && (
+                      <p className="text-[#C9D1D9] text-sm line-clamp-3 mb-4 flex-1">{blog.excerpt}</p>
+                    )}
 
-                  <div className="flex items-center justify-between mt-4 text-xs text-[#C9D1D9]/60">
-                    <div className="flex items-center gap-3">
-                      {date && (
-                        <span className="inline-flex items-center gap-1">
+                    <div className="flex items-center justify-between pt-3 border-t border-white/10 mt-auto">
+                      {date ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-white/50">
                           <Calendar className="h-3 w-3" />
                           {date.toLocaleDateString("en-US", {
                             month: "short",
@@ -101,20 +130,14 @@ export default async function BlogPage() {
                             year: "numeric",
                           })}
                         </span>
-                      )}
-                      {blog.readTime && (
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {blog.readTime} min
-                        </span>
-                      )}
+                      ) : <span />}
+                      <Link
+                        href={`/blog/${blog.slug}`}
+                        className="inline-flex items-center gap-1 text-[#C77DFF] text-sm font-semibold group-hover:gap-2 transition-all"
+                      >
+                        Read <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
                     </div>
-                    <Link
-                      href={`/blog/${blog.slug}`}
-                      className="inline-flex items-center gap-1 text-[#C77DFF] font-medium group-hover:gap-2 transition-all"
-                    >
-                      Read <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
                   </div>
                 </article>
               );

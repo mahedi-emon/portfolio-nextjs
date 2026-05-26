@@ -10,6 +10,8 @@ import {
   Search,
   CheckCircle2,
   Circle,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { EntityForm } from "./EntityForm";
@@ -77,6 +79,7 @@ function CollectionEditor({
   const [mode, setMode] = useState<"list" | "create" | { type: "edit"; id: string }>("list");
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Row | null>(null);
 
   const collectionKey = schema.key as CollectionKey;
 
@@ -114,12 +117,12 @@ function CollectionEditor({
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this item? This cannot be undone.")) return;
     setDeleting(id);
     try {
       await deleteCollectionItem(collectionKey, id);
       setItems((prev) => prev.filter((x) => x.id !== id));
       toast.success("Deleted");
+      setConfirmDelete(null);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Delete failed");
     } finally {
@@ -256,7 +259,7 @@ function CollectionEditor({
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => setConfirmDelete(item)}
                   disabled={deleting === item.id}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 disabled:opacity-40"
                   aria-label="Delete"
@@ -271,6 +274,70 @@ function CollectionEditor({
             );
           })}
         </ul>
+      )}
+
+      {confirmDelete && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+          onClick={() => deleting === null && setConfirmDelete(null)}
+        >
+          <div
+            className="relative w-full max-w-md rounded-2xl border border-red-500/30 bg-[#0B1320] p-6 shadow-2xl shadow-red-500/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(null)}
+              disabled={deleting !== null}
+              className="absolute top-4 right-4 text-white/40 hover:text-white disabled:opacity-30"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-red-500/15 border border-red-500/30">
+                <AlertTriangle className="h-6 w-6 text-red-400" />
+              </div>
+              <div className="flex-1 pt-1">
+                <h3 className="text-lg font-bold text-white mb-1">Delete this item?</h3>
+                <p className="text-sm text-[#C9D1D9]">
+                  <span className="font-semibold text-white">{getLabel(confirmDelete)}</span> will be
+                  permanently removed. This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting !== null}
+                className="rounded-xl border border-white/10 px-4 py-2 text-sm font-medium text-[#C9D1D9] hover:bg-white/5 disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(confirmDelete.id)}
+                disabled={deleting !== null}
+                className="inline-flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-500/30 hover:bg-red-600 disabled:opacity-50"
+              >
+                {deleting !== null ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Deleting…
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

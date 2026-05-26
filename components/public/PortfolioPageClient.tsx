@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Sparkles,
   FolderKanban,
@@ -13,6 +14,7 @@ import {
   FileText,
   Eye,
   Inbox,
+  ArrowRight,
 } from "lucide-react";
 import { CertificateModal } from "@/components/common/CertificateModal";
 import type {
@@ -108,72 +110,109 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
 
       {/* Projects Tab */}
       {activeTab === "projects" && projects.length > 0 && (
-        <section className="grid gap-8 md:grid-cols-2">
-          {projects.map((project, index) => (
-            <article
-              key={project.id}
-              className="group relative animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.14] transition-all duration-600 ease-out" />
-              <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out">
-                {project.coverImageUrl ? (
-                  <div className="relative h-52 overflow-hidden img-hover-shine">
-                    <Image
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      src={project.coverImageUrl}
-                      alt={project.title}
-                      fill
-                      quality={88}
-                      sizes="(min-width: 768px) 50vw, 100vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                ) : (
-                  <div className="h-52 bg-gradient-to-br from-[#0B1320]/50 to-[#0B1320]/60 flex items-center justify-center animate-bg-pan">
-                    <FolderKanban className="w-16 h-16 text-[#C77DFF] animate-bounce-subtle" />
-                  </div>
-                )}
+        <section className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project, index) => {
+            const galleryCount = project.galleryImages?.length ?? 0;
+            return (
+              <article
+                key={project.id}
+                className="group relative animate-fade-in"
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.18] transition-all duration-600 ease-out" />
+                <div className="relative h-full bg-[#0B1320]/85 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:-translate-y-2 hover:border-[#C77DFF]/30 transition-all duration-500 ease-out flex flex-col">
+                  {project.coverImageUrl ? (
+                    <div className="relative h-52 overflow-hidden img-hover-shine">
+                      <Image
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        src={project.coverImageUrl}
+                        alt={project.title}
+                        fill
+                        quality={88}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320]/80 via-transparent to-transparent" />
 
-                <div className="p-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0B1320]/50 text-[#C77DFF] text-xs font-semibold mb-3 group-hover:bg-[#C77DFF]/20 transition-colors">
-                    <Sparkles className="w-3 h-3 group-hover:animate-spin-slow" />
-                    Project {String(index + 1).padStart(2, "0")}
-                  </div>
+                      {project.featured && (
+                        <div className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/30">
+                          <Sparkles className="w-3 h-3 text-white" />
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider">Featured</span>
+                        </div>
+                      )}
 
-                  <h2 className="text-xl font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors">
-                    {project.title}
-                  </h2>
-                  <p className="text-[#C9D1D9] mb-4 line-clamp-2">{project.summary}</p>
+                      {galleryCount > 0 && (
+                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                          <span className="text-[10px] font-bold text-white">+{galleryCount} images</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="h-52 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center">
+                      <FolderKanban className="w-16 h-16 text-[#C77DFF]/50 animate-bounce-subtle" />
+                    </div>
+                  )}
 
-                  <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-[#C9D1D9] hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all duration-300 group/link"
-                      >
-                        <Code className="w-4 h-4 group-hover/link:animate-bounce-subtle" />
-                        Code
-                      </a>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h2 className="text-lg font-bold text-white mb-2 group-hover:text-[#C77DFF] transition-colors line-clamp-2">
+                      {project.title}
+                    </h2>
+                    <p className="text-[#C9D1D9] text-sm mb-4 line-clamp-2">{project.summary}</p>
+
+                    {project.techStack && project.techStack.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {project.techStack.slice(0, 4).map((tech) => (
+                          <span
+                            key={tech}
+                            className="px-2 py-0.5 rounded-full bg-[#C77DFF]/10 border border-[#C77DFF]/20 text-[10px] font-semibold text-[#C77DFF] uppercase tracking-wider"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        {project.techStack.length > 4 && (
+                          <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-semibold text-white/60">
+                            +{project.techStack.length - 4}
+                          </span>
+                        )}
+                      </div>
                     )}
-                    {project.liveDemoUrl && (
-                      <a
-                        href={project.liveDemoUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-[#C9D1D9] hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all duration-300 group/link"
+
+                    <div className="flex items-center gap-3 pt-4 border-t border-white/10 mt-auto">
+                      <Link
+                        href={`/portfolio/${project.slug}`}
+                        className="inline-flex items-center gap-1 text-sm text-[#C77DFF] font-semibold hover:gap-2 transition-all"
                       >
-                        <ExternalLink className="w-4 h-4 group-hover/link:animate-wiggle" />
-                        Live Demo
-                      </a>
-                    )}
+                        Case study <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <div className="ml-auto flex items-center gap-3">
+                        {project.githubUrl && (
+                          <a
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="View code"
+                            className="text-white/60 hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all"
+                          >
+                            <Code className="w-4 h-4" />
+                          </a>
+                        )}
+                        {project.liveDemoUrl && (
+                          <a
+                            href={project.liveDemoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Live demo"
+                            className="text-white/60 hover:text-[#C77DFF] hover:-translate-y-0.5 transition-all"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </section>
       )}
 
@@ -281,46 +320,85 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                   Achievements & Awards
                 </h2>
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                {achievements.map((item, index) => (
-                  <article
-                    key={item.id}
-                    className="group relative animate-fade-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-2xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.14] transition-all duration-600 ease-out" />
-                    <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-xl p-6 shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-600 ease-out">
-                      <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#C77DFF]/10 border border-[#C77DFF]/15 flex-shrink-0 transition-all duration-500 ease-out">
-                          <Trophy className="w-6 h-6 text-[#C77DFF]" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-white group-hover:text-[#C77DFF] transition-colors">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {achievements.map((item, index) => {
+                  const coverImage = item.certificateImageUrl || item.galleryImages?.[0];
+                  const extraGalleryCount = (item.galleryImages?.length ?? 0) - (item.certificateImageUrl ? 0 : 1);
+                  return (
+                    <article
+                      key={item.id}
+                      className="group relative animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-2xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.18] transition-all duration-600 ease-out" />
+                      <div className="relative h-full bg-[#0B1320]/85 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-[#C77DFF]/[0.05] border border-white/[0.06] hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:-translate-y-2 hover:border-[#C77DFF]/30 transition-all duration-500 ease-out flex flex-col">
+                        {coverImage ? (
+                          <div className="relative h-44 overflow-hidden">
+                            <Image
+                              src={coverImage}
+                              alt={item.title}
+                              fill
+                              quality={88}
+                              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                              className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/30 to-transparent" />
+                            {item.year && (
+                              <div className="absolute top-0 right-4 flex flex-col items-center">
+                                <div className="px-3 py-2 bg-gradient-to-b from-[#C77DFF] to-[#9D4EDD] shadow-xl shadow-[#C77DFF]/40">
+                                  <span className="text-xs font-bold text-white">{item.year}</span>
+                                </div>
+                                <div className="w-0 h-0 border-l-[18px] border-r-[18px] border-t-[10px] border-l-transparent border-r-transparent border-t-[#9D4EDD]" />
+                              </div>
+                            )}
+                            <div className="absolute bottom-3 left-3 w-10 h-10 rounded-xl bg-[#0B1320]/85 backdrop-blur-sm border border-[#C77DFF]/40 flex items-center justify-center">
+                              <Trophy className="w-5 h-5 text-[#C77DFF]" />
+                            </div>
+                            {extraGalleryCount > 0 && (
+                              <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-white/15">
+                                <span className="text-[10px] font-bold text-white">+{extraGalleryCount} photos</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="relative h-44 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center">
+                            {item.year && (
+                              <div className="absolute top-0 right-4 flex flex-col items-center">
+                                <div className="px-3 py-2 bg-gradient-to-b from-[#C77DFF] to-[#9D4EDD] shadow-xl shadow-[#C77DFF]/40">
+                                  <span className="text-xs font-bold text-white">{item.year}</span>
+                                </div>
+                                <div className="w-0 h-0 border-l-[18px] border-r-[18px] border-t-[10px] border-l-transparent border-r-transparent border-t-[#9D4EDD]" />
+                              </div>
+                            )}
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-xl shadow-[#C77DFF]/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                              <Trophy className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="p-5 flex-1 flex flex-col">
+                          <h3 className="text-base font-bold text-white mb-1 group-hover:text-[#C77DFF] transition-colors line-clamp-2">
                             {item.title}
                           </h3>
-                          <p className="text-[#C77DFF] font-medium text-sm">{item.issuer}</p>
-                          {item.year && (
-                            <p className="text-sm text-white/60 mt-1">{item.year}</p>
-                          )}
+                          <p className="text-sm text-[#C77DFF] font-semibold mb-3">{item.issuer}</p>
                           {item.description && (
-                            <p className="text-[#C9D1D9] text-sm mt-3">{item.description}</p>
+                            <p className="text-[#C9D1D9] text-sm line-clamp-3 mb-3 flex-1">{item.description}</p>
                           )}
                           {item.externalLink && (
                             <a
                               href={item.externalLink}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-[#C77DFF] font-medium mt-3 hover:gap-3 transition-all duration-300 group/link"
+                              className="inline-flex items-center gap-1.5 text-sm text-[#C77DFF] font-semibold hover:gap-2.5 transition-all mt-auto pt-3 border-t border-white/10"
                             >
-                              <ExternalLink className="w-4 h-4 group-hover/link:animate-wiggle" />
-                              View Details
+                              View details <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           )}
                         </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             </div>
           )}

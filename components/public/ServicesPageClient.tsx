@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Sparkles, Zap, ArrowRight, Inbox } from "lucide-react";
 import type { Service } from "@/lib/cms/types";
@@ -38,34 +39,51 @@ export function ServicesPageClient({ services }: { services: Service[] }) {
               <article
                 key={service.id}
                 className="group relative animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
+                style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.14] transition-all duration-600 ease-out" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] rounded-3xl blur-sm opacity-[0.06] group-hover:blur-md group-hover:opacity-[0.18] transition-all duration-600 ease-out" />
 
-                <div className="relative h-full bg-[#0B1320]/80 backdrop-blur-sm rounded-2xl p-8 border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] hover:border-white/[0.12] hover:shadow-xl hover:shadow-[#C77DFF]/[0.12] hover:-translate-y-1 transition-all duration-600 ease-out">
+                <div className="relative h-full bg-[#0B1320]/85 backdrop-blur-sm rounded-3xl border border-white/[0.06] shadow-lg shadow-[#C77DFF]/[0.05] hover:border-[#C77DFF]/30 hover:shadow-2xl hover:shadow-[#C77DFF]/[0.18] hover:-translate-y-2 transition-all duration-500 ease-out overflow-hidden flex flex-col">
                   {service.imageUrl ? (
-                    <div className="w-full h-40 rounded-2xl overflow-hidden mb-6 border border-white/10">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative w-full h-52 overflow-hidden">
+                      <Image
                         src={service.imageUrl}
                         alt={service.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        quality={88}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/30 to-transparent" />
+                      <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-[#C77DFF]/30">
+                        <span className="text-[10px] font-bold text-[#C77DFF]">0{index + 1}</span>
+                      </div>
                     </div>
                   ) : (
-                    <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#C77DFF]/10 border border-[#C77DFF]/15 mb-6 group-hover:bg-[#C77DFF]/15 group-hover:border-[#C77DFF]/25 transition-all duration-500 ease-out">
-                      <Zap className="w-7 h-7 text-[#C77DFF]" />
+                    <div className="relative w-full h-52 bg-gradient-to-br from-[#C77DFF]/15 via-[#0B1320] to-[#9D4EDD]/15 flex items-center justify-center overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#C77DFF]/30 to-transparent rounded-full -translate-y-12 translate-x-12 group-hover:scale-150 transition-transform duration-700" />
+                      <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C77DFF] to-[#9D4EDD] flex items-center justify-center shadow-xl shadow-[#C77DFF]/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                        <Zap className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-[#0B1320]/85 backdrop-blur-sm border border-[#C77DFF]/30">
+                        <span className="text-[10px] font-bold text-[#C77DFF]">0{index + 1}</span>
+                      </div>
                     </div>
                   )}
 
-                  <h2 className="text-xl font-bold text-white mb-3 transition-colors duration-500">
-                    {service.title}
-                  </h2>
-                  <p className="text-[#C9D1D9] leading-relaxed mb-6">{service.summary}</p>
+                  <div className="p-7 flex-1 flex flex-col">
+                    <h2 className="text-xl font-bold text-white mb-3 group-hover:text-[#C77DFF] transition-colors">
+                      {service.title}
+                    </h2>
+                    <p className="text-[#C9D1D9] leading-relaxed mb-5 flex-1">{service.summary}</p>
 
-                  <div className="flex items-center gap-2 text-[#C77DFF]/70 font-medium text-sm group-hover:text-[#C77DFF] group-hover:gap-3 transition-all duration-500">
-                    <span>Learn more</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-500" />
+                    <Link
+                      href="/contact"
+                      className="inline-flex items-center gap-2 text-[#C77DFF] font-semibold text-sm group-hover:gap-3 transition-all mt-auto"
+                    >
+                      <span>Get started</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </div>
               </article>

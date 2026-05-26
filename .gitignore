@@ -33,6 +33,7 @@ supabase/
 # Next.js
 .next/
 out/
+tsconfig.tsbuildinfo
 
 
 # Serena (editor cache, not part of project)
