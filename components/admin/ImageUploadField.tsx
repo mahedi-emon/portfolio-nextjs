@@ -109,15 +109,21 @@ export function ImageUploadField({ field, value, onChange }: Props) {
           />
           <div className="flex flex-col items-center justify-center p-6 text-center">
             {uploading ? (
-              <Loader2 className="w-8 h-8 text-[#C77DFF] animate-spin" />
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="w-8 h-8 text-[#C77DFF] animate-spin" />
+                <p className="text-sm text-[#C9D1D9]">Uploading…</p>
+              </div>
             ) : value ? (
               field.type === "image" ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={value}
-                  alt="preview"
-                  className="h-24 w-24 rounded-xl object-cover border border-white/10"
-                />
+                <div className="flex flex-col items-center gap-3 w-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={value}
+                    alt="preview"
+                    className="max-h-64 w-auto max-w-full rounded-xl object-contain border border-white/10 bg-[#0B1320]/60 shadow-lg"
+                  />
+                  <p className="text-xs text-white/40">Click anywhere to replace</p>
+                </div>
               ) : (
                 <div className="flex items-center gap-3 rounded-xl bg-[#0B1320]/60 border border-white/10 p-3">
                   <FileText className="w-8 h-8 text-[#C77DFF]" />

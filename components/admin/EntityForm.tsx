@@ -5,6 +5,7 @@ import { Save, Loader2, Check, X, Plus, AlertCircle } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "./ImageUploadField";
+import { GalleryUploadField } from "./GalleryUploadField";
 import { detectSocialPlatform, formatPlatformLabel } from "@/lib/utils/detectSocialPlatform";
 import { iconMap } from "@/lib/utils/iconMap";
 import { computeReadTime } from "@/lib/utils/sanitizeHtml";
@@ -194,7 +195,8 @@ export function EntityForm({
             field.type === "socialLinks" ||
             field.name === "pageIntroText" ||
             field.type === "image" ||
-            field.type === "file";
+            field.type === "file" ||
+            (field.type === "list" && field.storageField);
           const v = getNested(values, field.name);
           const err = errors[field.name];
 
@@ -242,7 +244,15 @@ export function EntityForm({
                   />
                   <span className="text-sm text-[#C9D1D9]">Enable</span>
                 </label>
+              ) : field.type === "list" && field.storageField ? (
+                // Gallery: multi-image upload with thumbnail preview grid
+                <GalleryUploadField
+                  field={field}
+                  value={Array.isArray(v) ? (v as string[]) : []}
+                  onChange={(urls) => change(field.name, urls)}
+                />
               ) : field.type === "list" ? (
+                // Plain string list (tech stack, tags, authors) — comma-separated
                 <input
                   type="text"
                   placeholder="Comma-separated values"
