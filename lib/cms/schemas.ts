@@ -307,7 +307,14 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Blogs",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "scheduled", "published", "archived"],
+        required: true,
+        placeholder: "scheduled → cron auto-publishes when Published Date passes",
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "title", label: "Title", required: true },
       { name: "slug", label: "Slug", required: true },
@@ -324,7 +331,12 @@ export const sectionSchemas: Record<string, SectionSchema> = {
         maxSizeMB: 5,
       },
       { name: "author", label: "Author" },
-      { name: "publishedDate", label: "Published Date", type: "date" },
+      {
+        name: "publishedDate",
+        label: "Published / Scheduled Date",
+        type: "date",
+        placeholder: "If status=scheduled, post goes live at midnight UTC on this date",
+      },
       // readTime is auto-computed from content word count on save
       { name: "readTime", label: "Read Time (auto)", type: "number" },
       { name: "tags", label: "Tags (comma separated)", type: "list" },

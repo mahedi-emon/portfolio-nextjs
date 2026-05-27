@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { ADMIN_PATH } from "@/lib/constants";
+import { BackupButton } from "@/components/admin/BackupButton";
 
 export default async function DashboardPage() {
   // Service-role: dashboard layout already guards auth. Bypasses RLS so
@@ -199,7 +200,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Quick actions */}
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Link
           href={`${ADMIN_PATH}/cms/projects`}
           className="group flex items-center gap-3 rounded-xl border border-white/10 bg-[#0B1320]/60 p-4 hover:border-[#C77DFF]/40"
@@ -230,6 +231,7 @@ export default async function DashboardPage() {
             <p className="text-xs text-white/50">Tagline, CTA, photo</p>
           </div>
         </Link>
+        <BackupButton />
       </section>
     </div>
   );

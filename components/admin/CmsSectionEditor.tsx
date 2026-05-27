@@ -19,6 +19,15 @@ import {
 import { toast } from "sonner";
 import { EntityForm } from "./EntityForm";
 import { TechStackToolsEditor } from "./TechStackToolsEditor";
+import { PreviewLinkButton } from "./PreviewLinkButton";
+import type { PreviewType } from "@/lib/preview/token";
+
+const PREVIEWABLE_KEYS: Record<string, PreviewType> = {
+  blogs: "blog",
+  projects: "project",
+  publications: "publication",
+  achievements: "achievement",
+};
 import {
   createCollectionItem,
   deleteCollectionItem,
@@ -199,9 +208,19 @@ function CollectionEditor({
           Back to list
         </button>
         <div className="rounded-2xl border border-white/10 bg-[#0B1320]/60 p-6 backdrop-blur-sm">
-          <h2 className="mb-6 text-xl font-bold text-white">
-            {mode === "create" ? `New ${schema.title} item` : `Edit ${schema.title}`}
-          </h2>
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h2 className="text-xl font-bold text-white">
+              {mode === "create" ? `New ${schema.title} item` : `Edit ${schema.title}`}
+            </h2>
+            {mode !== "create" &&
+              editingItem &&
+              PREVIEWABLE_KEYS[collectionKey] && (
+                <PreviewLinkButton
+                  type={PREVIEWABLE_KEYS[collectionKey]}
+                  id={editingItem.id}
+                />
+              )}
+          </div>
           <EntityForm
             fields={schema.fields}
             initial={mode === "create" ? undefined : editingItem ?? undefined}
@@ -329,7 +348,11 @@ function CollectionEditor({
                       "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
                       status === "published"
                         ? "bg-emerald-500/15 text-emerald-300"
-                        : "bg-yellow-500/15 text-yellow-300",
+                        : status === "scheduled"
+                          ? "bg-cyan-500/15 text-cyan-300"
+                          : status === "archived"
+                            ? "bg-white/10 text-white/50"
+                            : "bg-yellow-500/15 text-yellow-300",
                     )}
                   >
                     {status}
