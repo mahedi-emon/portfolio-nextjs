@@ -148,15 +148,9 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    {/* Code + Live Demo
-                        Touch (< lg / 1024px): always visible
-                        Desktop (lg+): hidden by default, fade in on card hover */}
-                    <div
-                      className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2 transition-all duration-500 ease-out
-                        opacity-100 translate-y-0 pointer-events-auto
-                        lg:opacity-0 lg:translate-y-4 lg:pointer-events-none
-                        lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:pointer-events-auto"
-                    >
+                    {/* Code + Live Demo — same hover-reveal behavior as home,
+                        driven by .project-actions in globals.css */}
+                    <div className="project-actions absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2">
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}

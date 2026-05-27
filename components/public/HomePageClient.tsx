@@ -638,15 +638,11 @@ export function HomePageClient({ data }: { data: HomeData }) {
                     </div>
 
                     {/* Code + Live Demo
-                        Touch (< lg / 1024px): visible always — no hover state on phone/tablet
-                        Desktop (lg+): hidden by default, slide up + fade in only on card hover
-                        Color: GitHub-icon Code button (solid white) + gradient Live Demo */}
-                    <div
-                      className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-3 transition-all duration-500 ease-out
-                        opacity-100 translate-y-0 pointer-events-auto
-                        lg:opacity-0 lg:translate-y-4 lg:pointer-events-none
-                        lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:pointer-events-auto"
-                    >
+                        Touch (< 1024px): always visible
+                        Desktop (>= 1024px): hidden by default, revealed on card hover.
+                        Logic lives in globals.css `.project-actions` — Tailwind v4
+                        variant-chaining lg:group-hover: doesn't reliably emit CSS. */}
+                    <div className="project-actions absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-3">
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
