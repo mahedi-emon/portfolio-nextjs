@@ -51,23 +51,6 @@
   --color-border: rgba(255, 255, 255, 0.1);
 }
 
-/* Project card hover-reveal — bypass Tailwind v4 variant-chain quirks.
-   On phone/tablet (< 1024px): buttons stay visible.
-   On desktop (>= 1024px): buttons hidden by default, revealed on card hover. */
-@media (min-width: 1024px) {
-  .project-actions {
-    opacity: 0;
-    transform: translateY(16px);
-    pointer-events: none;
-    transition: opacity 500ms ease-out, transform 500ms ease-out;
-  }
-  .group:hover .project-actions {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-}
-
 /* Tailwind v4 theme tokens — expose CSS vars as Tailwind colors */
 @theme {
   --color-ink: #0B1320;
@@ -501,4 +484,26 @@ body {
 *:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROJECT CARD HOVER REVEAL — raw CSS, outside @layer so Tailwind v4 keeps it
+   Phone/tablet (< 1024px): buttons stay visible.
+   Desktop (>= 1024px): hidden until card hover.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.project-actions {
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+@media (min-width: 1024px) {
+  .project-actions {
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+  }
+  .group:hover .project-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 }

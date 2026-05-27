@@ -136,17 +136,8 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                       </div>
                     )}
 
-                    {/* Dark gradient overlay so buttons stay readable */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/20 to-transparent pointer-events-none z-10" />
-
-                    {project.featured && (
-                      <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/30">
-                        <Sparkles className="w-3 h-3 text-white" />
-                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-                          Featured
-                        </span>
-                      </div>
-                    )}
+                    {/* Soft bottom-only shadow behind action buttons */}
+                    <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0B1320]/85 to-transparent pointer-events-none z-10" />
 
                     {/* Code + Live Demo — same hover-reveal behavior as home,
                         driven by .project-actions in globals.css */}

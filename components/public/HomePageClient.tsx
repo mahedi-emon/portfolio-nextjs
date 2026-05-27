@@ -626,16 +626,9 @@ export function HomePageClient({ data }: { data: HomeData }) {
                       </div>
                     )}
 
-                    {/* Dark gradient overlay so badges + buttons stay readable */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1320] via-[#0B1320]/20 to-transparent pointer-events-none z-10" />
-
-                    {/* Featured ribbon */}
-                    <div className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C77DFF] to-[#9D4EDD] shadow-lg shadow-[#C77DFF]/40">
-                      <Sparkles className="w-3.5 h-3.5 text-white" />
-                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-                        Featured
-                      </span>
-                    </div>
+                    {/* Soft bottom-only shadow so action buttons stay readable
+                        without darkening the rest of the cover image */}
+                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0B1320]/85 to-transparent pointer-events-none z-10" />
 
                     {/* Code + Live Demo
                         Touch (< 1024px): always visible
