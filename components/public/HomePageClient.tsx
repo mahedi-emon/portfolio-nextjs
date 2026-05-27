@@ -20,6 +20,7 @@ import {
   Clock,
 } from "lucide-react";
 import { ProjectCardCarousel } from "./ProjectCardCarousel";
+import { GithubIcon } from "@/components/common/BrandIcons";
 import { ResumeViewerModal } from "@/components/common/ResumeViewerModal";
 import { CertificateModal } from "@/components/common/CertificateModal";
 import type {
@@ -637,10 +638,15 @@ export function HomePageClient({ data }: { data: HomeData }) {
                     </div>
 
                     {/* Code + Live Demo
-                        - Mobile/tablet (< md): always visible (no hover available)
-                        - Desktop (md+): hidden by default, slide up + fade in on card hover
-                        When visible: solid clean buttons matching the live-site look. */}
-                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-3 opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out">
+                        Touch (< lg / 1024px): visible always — no hover state on phone/tablet
+                        Desktop (lg+): hidden by default, slide up + fade in only on card hover
+                        Color: GitHub-icon Code button (solid white) + gradient Live Demo */}
+                    <div
+                      className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-3 transition-all duration-500 ease-out
+                        opacity-100 translate-y-0 pointer-events-auto
+                        lg:opacity-0 lg:translate-y-4 lg:pointer-events-none
+                        lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:pointer-events-auto"
+                    >
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
@@ -648,7 +654,7 @@ export function HomePageClient({ data }: { data: HomeData }) {
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-[#0B1320] text-sm font-semibold shadow-lg hover:scale-105 transition-transform"
                         >
-                          <Code className="w-4 h-4" /> Code
+                          <GithubIcon className="w-4 h-4" /> Code
                         </a>
                       )}
                       {project.liveDemoUrl && (

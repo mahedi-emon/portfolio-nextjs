@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ProjectCardCarousel } from "@/components/public/ProjectCardCarousel";
+import { GithubIcon } from "@/components/common/BrandIcons";
 import { CertificateModal } from "@/components/common/CertificateModal";
 import type {
   Achievement,
@@ -148,9 +149,14 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                     )}
 
                     {/* Code + Live Demo
-                        - Mobile/tablet: always visible (no hover)
-                        - Desktop: hidden by default, slide up + fade in on hover */}
-                    <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out">
+                        Touch (< lg / 1024px): always visible
+                        Desktop (lg+): hidden by default, fade in on card hover */}
+                    <div
+                      className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap gap-2 transition-all duration-500 ease-out
+                        opacity-100 translate-y-0 pointer-events-auto
+                        lg:opacity-0 lg:translate-y-4 lg:pointer-events-none
+                        lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:pointer-events-auto"
+                    >
                       {project.githubUrl && (
                         <a
                           href={project.githubUrl}
@@ -158,7 +164,7 @@ export function PortfolioPageClient({ data }: { data: PortfolioData }) {
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#0B1320] text-xs font-semibold shadow-lg hover:scale-105 transition-transform"
                         >
-                          <Code className="w-3.5 h-3.5" /> Code
+                          <GithubIcon className="w-3.5 h-3.5" /> Code
                         </a>
                       )}
                       {project.liveDemoUrl && (
