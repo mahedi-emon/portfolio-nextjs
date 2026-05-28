@@ -350,7 +350,6 @@ export const sectionSchemas: Record<string, SectionSchema> = {
       { name: "status", label: "Status", required: true },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "author", label: "Author Name", required: true },
-      // NEW: avatar, role, company
       {
         name: "avatarUrl",
         label: "Avatar Image",
@@ -362,6 +361,17 @@ export const sectionSchemas: Record<string, SectionSchema> = {
       },
       { name: "role", label: "Role / Title", placeholder: "e.g., Senior Engineer" },
       { name: "company", label: "Company", placeholder: "e.g., Acme Inc." },
+      {
+        name: "rating",
+        label: "Rating (1-5)",
+        type: "number",
+        placeholder: "5 = full gold stars, 4 = four filled + one outline, etc.",
+      },
+      {
+        name: "projectName",
+        label: "Project Worked On (optional)",
+        placeholder: "e.g., E-commerce dashboard redesign",
+      },
       { name: "quote", label: "Quote", type: "textarea", required: true },
     ],
   },

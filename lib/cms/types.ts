@@ -150,9 +150,11 @@ export interface Blog extends SluggableBase {
 export interface Testimonial extends PublishableBase {
   author: string;
   quote: string;
-  avatarUrl: string | null; // NEW
-  role: string | null; // NEW
-  company: string | null; // NEW
+  avatarUrl: string | null;
+  role: string | null;
+  company: string | null;
+  rating: number | null;
+  projectName: string | null;
 }
 
 export interface Achievement extends PublishableBase {

@@ -880,16 +880,28 @@ export function HomePageClient({ data }: { data: HomeData }) {
                 {/* Animated glow on hover */}
                 <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-[#C77DFF]/20 to-transparent rounded-full -translate-y-16 -translate-x-16 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
 
-                {/* 5-star rating */}
-                <div className="relative flex items-center gap-0.5 mb-5">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 text-[#FFB800] fill-[#FFB800] drop-shadow-[0_0_4px_rgba(255,184,0,0.5)]"
-                    />
-                  ))}
-                  <span className="ml-2 text-xs font-semibold text-white/60">5.0</span>
-                </div>
+                {/* Star rating — uses item.rating from admin; defaults to 5 */}
+                {(() => {
+                  const rating =
+                    typeof item.rating === "number" && item.rating > 0 ? item.rating : 5;
+                  const clamped = Math.max(1, Math.min(5, rating));
+                  return (
+                    <div className="relative flex items-center gap-0.5 mb-5">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <Star
+                          key={i}
+                          fill={i < Math.floor(clamped) ? "#FFB800" : "transparent"}
+                          stroke="#FFB800"
+                          strokeWidth={1.5}
+                          className="w-4 h-4 drop-shadow-[0_0_4px_rgba(255,184,0,0.5)]"
+                        />
+                      ))}
+                      <span className="ml-2 text-xs font-semibold text-white/60">
+                        {clamped.toFixed(1)}
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 <p className="relative text-base text-white leading-relaxed mb-6 flex-1 font-medium">
                   &ldquo;{item.quote}&rdquo;
@@ -934,6 +946,11 @@ export function HomePageClient({ data }: { data: HomeData }) {
                     ) : (
                       <div className="text-xs text-[#C9D1D9]/60 mt-0.5">Verified Client</div>
                     )}
+                    {item.projectName ? (
+                      <div className="text-[10px] text-white/40 truncate mt-1">
+                        ↳ {item.projectName}
+                      </div>
+                    ) : null}
                   </div>
                 </footer>
               </blockquote>
