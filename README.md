@@ -1,237 +1,178 @@
-# 🚀 Portfolio Website + Admin CMS
+<div align="center">
 
-Modern portfolio with an integrated admin CMS — **Next.js 16 App Router + TypeScript + Tailwind v4 + Supabase**, deployed on **Vercel**.
+# Mahedi Hasan Emon — Portfolio
 
-![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
-![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel)
+A modern, content-driven portfolio site with an integrated headless CMS.
+Built for performance, SEO, and a decade of low-friction content updates.
 
-- 🌐 Live: [mahedihasanemon.site](https://mahedihasanemon.site/)
-- 👨‍💻 Author: **Mahedi Hasan Emon** — Full-Stack Developer
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com/)
+
+**[mahedihasanemon.site](https://mahedihasanemon.site/)**
+
+</div>
 
 ---
 
-## ⚡ Performance — Production Grade
+## Overview
 
-Every public route is **static or SSG**, served from Vercel CDN edge with near-zero server work.
+A personal portfolio for showcasing software engineering work, research
+publications, and writing — backed by a custom admin panel so every piece
+of content is editable from the browser, without touching the codebase.
 
-| Route | Type | What it means |
-|---|---|---|
-| `/` `/about` `/blog` `/contact` `/portfolio` `/publications` `/services` | **○ Static** | Pre-rendered at deploy, served from CDN |
-| `/blog/[slug]` `/portfolio/[slug]` | **● SSG** | Every published slug pre-built at deploy time |
-| `/sitemap.xml` `/robots.txt` | **○ Static** | Built once |
-| `/api/*` `/mhe-control-center/*` | **ƒ Dynamic** | Auth-bound APIs and admin panel only |
+The public site is statically rendered for instant page loads; the editor
+runs server-side over an authenticated session.
 
-### Optimizations layered
-1. **`unstable_cache` on every public query** — multiple visitors in the same revalidation window share one Supabase round-trip (cross-request data cache).
-2. **`generateStaticParams`** on slug pages — every existing blog post + project is HTML-baked at build time.
-3. **Slim column lists** — list queries skip heavy `content` / `description` HTML; detail pages fetch `*`.
-4. **`revalidate: 300`** on public pages + **`revalidateTag('cms')`** triggered by admin save = instant content updates, no stale serving.
-5. **`next/image`** with AVIF/WebP + responsive `sizes` + lazy load — images ~70% smaller, quality preserved (88-92).
-6. **`optimizePackageImports`** for `lucide-react` + `sonner` — tree-shaken icon imports cut hundreds of KB.
-7. **HTTP Cache-Control** — `immutable` 1-year for `/_next/static/*`, `stale-while-revalidate` for `/_next/image*`.
-8. **Router Cache `staleTimes`** — back/forward navigation reuses prefetched segments for 30-300 s.
-9. **All images in real Supabase Storage** (not base64 in DB) — page payload dropped from **45 MB → 167 KB**.
+---
 
-### Measured speeds (Vercel production estimate)
+## Features
 
-| Visitor scenario | TTFB |
+### For visitors
+- Animated hero with profile, stats, and call-to-action
+- About section — bio, skills, education, experience, certifications
+- Portfolio with filterable tabs across projects, publications, and awards
+- Project detail pages with full case studies and image galleries
+- Long-form blog with rich content and reading time
+- Services overview with image-led cards
+- Public testimonials with avatars and ratings
+- Native sitemap, robots.txt, and per-page Open Graph / Twitter / JSON-LD
+- Fully responsive across mobile, tablet, and desktop
+
+### For the owner (admin panel)
+- Single-admin authentication via Supabase
+- Schema-driven editor covering every content type
+- Drag-and-drop image upload with live preview and gallery support
+- Auto-generated slugs and read time, plus drag-to-reorder lists
+- Save / update / delete with toast notifications and confirm dialogs
+- One-click full-site JSON backup export
+- HMAC-signed preview links for sharing drafts privately
+- Scheduled publishing for blog posts via Vercel Cron
+- Mobile-friendly layout with a slide-out sidebar drawer
+
+---
+
+## Tech Stack
+
+| Layer | Choice |
 |---|---|
-| Any public page, cached | **30-60 ms** (CDN edge HTML) |
-| First visitor after 5-min stale window | **150-400 ms** (background regen) |
-| First visitor after admin save | **400-800 ms** (one fresh Supabase fetch, then cached) |
-| Repeat in-session navigation | **0 ms** (Router Cache hit) |
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Language | TypeScript 5 (strict mode) |
+| Styling | Tailwind CSS 4 with custom keyframe animations |
+| UI motion | Framer Motion |
+| Database & Auth | Supabase (PostgreSQL + Auth + Storage) |
+| Validation | Zod |
+| Sanitization | DOMPurify |
+| Notifications | Sonner |
+| Icons | Lucide React |
+| Hosting | Vercel |
 
 ---
 
-## ✨ Features
-
-### Public Site
-- **Hero** with spinning conic gradient border, floating orbs, animated stats
-- **About** with sticky profile card, skills pills, education with initials, experience timeline, certifications
-- **Portfolio** with `Projects | Publications | Achievements` tabs, certificate modal
-- **Project / Blog detail** with sanitized rich content, gallery
-- **Services**, **Contact** (form posts to `/api/contact`)
-- **Testimonials** with avatar / role / company
-- **AuroraMesh** canvas particle background, full responsive design
-- **GlobalLoader** splash (morphing core + 3 orbiting orbs) on first paint
-
-### Admin Panel (`/mhe-control-center`)
-- Supabase Auth (single-admin model), server-side middleware route guard
-- Dynamic CMS editor for 16 sections (schema-driven `EntityForm`)
-- Real Supabase Storage upload via `/api/admin/upload`
-- Sonner toast notifications
-- Messages list/detail with reply + delete
-- Mobile-responsive sidebar drawer
-
-### SEO
-- Per-page `generateMetadata` (unique title / description / OG / Twitter)
-- JSON-LD via Server Components — Person, WebSite, BlogPosting, CreativeWork, ProfessionalService, Review, etc.
-- Massive keyword bank: Mahedi Hasan Emon + CSE + Full-stack + Django + React + Next.js + ML/AI/NLP/BanglaBERT + DevOps
-- Native `sitemap.xml` (includes all slug routes) + `robots.txt`
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Stack |
-|---|---|
-| **Framework** | Next.js 16 (App Router, Turbopack) |
-| **Language** | TypeScript 5 (strict) |
-| **Styling** | Tailwind CSS 4 + custom CSS keyframes |
-| **Backend** | Supabase (PostgreSQL + Auth + Storage) |
-| **Auth** | `@supabase/ssr` (cookie-bound server + browser) |
-| **Caching** | `unstable_cache` (cross-request) + React `cache()` (per-request) |
-| **Animation** | Framer Motion + custom keyframes |
-| **Icons** | Lucide React + Simple Icons CDN |
-| **Validation** | Zod |
-| **Sanitization** | DOMPurify |
-| **Toasts** | Sonner |
-| **Hosting** | Vercel |
-
----
-
-## 📁 Project Structure
+## Project Layout
 
 ```
 .
-├── app/                            # Next.js App Router
-│   ├── layout.tsx                  # Root: fonts, metadata, AuroraMesh, Toaster, GlobalLoader
-│   ├── globals.css                 # Tailwind v4 + custom keyframes
-│   ├── sitemap.ts                  # Dynamic sitemap (includes slug routes)
-│   ├── robots.ts                   # Native robots
-│   ├── (public)/                   # All public routes — static + SSG
-│   │   ├── layout.tsx              # Header + Footer (also static)
-│   │   ├── page.tsx                # Home
-│   │   ├── about/page.tsx
-│   │   ├── portfolio/page.tsx + [slug]/page.tsx       # SSG via generateStaticParams
-│   │   ├── services/page.tsx
-│   │   ├── blog/page.tsx + [slug]/page.tsx            # SSG via generateStaticParams
-│   │   ├── publications/page.tsx
-│   │   └── contact/page.tsx
-│   ├── mhe-control-center/         # Admin (cookie-bound, never cached)
-│   │   ├── login/page.tsx
-│   │   ├── auth/callback/page.tsx
-│   │   └── (dashboard)/
-│   │       ├── dashboard/page.tsx
-│   │       ├── cms/[section]/page.tsx                # Dynamic CMS editor
-│   │       └── messages/page.tsx + [id]/page.tsx
-│   └── api/
-│       ├── admin/upload/route.ts                     # Auth-guarded → Supabase Storage
-│       ├── admin/revalidate/route.ts                 # revalidatePath + revalidateTag('cms')
-│       └── contact/route.ts                          # Public contact insert
+├── app/                 Next.js App Router
+│   ├── (public)/        Public marketing pages
+│   ├── api/             Route handlers (contact form, admin endpoints)
+│   └── ...              Sitemap, robots, root layout
 ├── components/
-│   ├── public/                     # Header, Footer, HomePageClient, AboutPageClient, PortfolioPageClient, ServicesPageClient, ContactPageClient
-│   ├── admin/                      # AdminLayoutClient, CmsSectionEditor, EntityForm, ImageUploadField, MessageActions
-│   ├── common/                     # AuroraMesh, GlobalLoader, ScrollToTop, JsonLd, ResumeViewerModal, CertificateModal
-│   └── ui/                         # Toaster
+│   ├── public/          Hero, sections, cards, carousel
+│   ├── admin/           Editor, form fields, layout
+│   └── common/          Background canvas, modals, brand icons
 ├── lib/
-│   ├── supabase/
-│   │   ├── server.ts               # cookie-bound server client (admin)
-│   │   ├── browser.ts              # browser client (admin mutations)
-│   │   ├── proxy.ts                # session refresh + admin guard
-│   │   ├── service-role.ts         # SERVER-ONLY service key client
-│   │   └── public.ts               # stateless anon client (cacheable, public reads)
-│   ├── cms/
-│   │   ├── schemas.ts              # 16 section field schemas
-│   │   ├── queries.ts              # cache() + unstable_cache wrapped, slim columns
-│   │   ├── mutations.ts            # client-side CRUD wrappers
-│   │   ├── mappers.ts              # snake_case ↔ camelCase + reserved keyword renames
-│   │   └── types.ts                # frontend camelCase interfaces
-│   ├── storage/buckets.ts          # bucket helpers
-│   ├── seo/                        # keywords, metadata, jsonld
-│   └── utils/                      # sanitizeHtml, iconMap, getToolLogoUrl, cn
-├── scripts/
-│   ├── migrate-base64-to-storage.mjs   # one-time migration (already run)
-│   └── fix-encoding.mjs                # UTF-8 mojibake repair
-├── proxy.ts                        # Next 16 middleware (Supabase session + admin guard)
-├── next.config.ts                  # image domains, headers, package optimization, cache TTL
-├── tsconfig.json                   # strict, path alias @/*
-└── .env.local                      # NEXT_PUBLIC_SUPABASE_URL, ANON_KEY, SUPABASE_SERVICE_KEY
+│   ├── cms/             Schema, queries, server actions, mappers
+│   ├── supabase/        Cookie-bound + browser + service-role clients
+│   ├── seo/             Metadata, keywords, JSON-LD
+│   ├── preview/         HMAC token signing for draft previews
+│   └── utils/           Sanitization, formatters, helpers
+└── public/              Static assets
 ```
 
 ---
 
-## 🚀 Quick Start
+## Getting Started
+
+### Prerequisites
+- Node.js 20+
+- A Supabase project with Auth + Storage enabled
+
+### Install
 
 ```bash
-# Clone
 git clone https://github.com/mahedi-emon/portfolio-nextjs.git
 cd portfolio-nextjs
-
-# Install
 npm install
+```
 
-# Env vars (.env.local)
-NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
-SUPABASE_SERVICE_KEY=eyJhbGc...            # server-only
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
+### Configure environment
 
-# Dev
-npm run dev                                # http://localhost:3000
+Create a `.env.local` from the template:
 
-# Production
-npm run build && npm run start
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (public reads) |
+| `SUPABASE_SERVICE_KEY` | Supabase service role key (server-only) |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL |
+| `PREVIEW_SECRET` | Random string for signing draft preview tokens |
+| `CRON_SECRET` | Random string for protecting scheduled-publish cron |
+
+### Run
+
+```bash
+npm run dev      # local development on http://localhost:3000
+npm run build    # production build
+npm run start    # serve production build
+npm run lint     # ESLint
 ```
 
 ---
 
-## 🗃️ Supabase Schema
+## Deployment
 
-17 tables — 4 singletons + 13 collections:
+The project is configured for deployment on Vercel:
 
-**Singletons:** `cms_hero`, `cms_about`, `cms_contact`, `cms_resume_settings`
+1. Push the repository to GitHub.
+2. Import the project on Vercel — the framework is auto-detected.
+3. Set the environment variables listed above in the Vercel project settings.
+4. Deploy. Subsequent pushes to `main` deploy automatically.
 
-**Collections:** `education`, `skills`, `services`, `resumes`, `projects`, `publications`, `certifications`, `experience`, `blogs`, `testimonials`, `achievements`, `clients`, `tech_stack_categories`, `contact_messages`
-
-**Storage buckets:** `images`, `documents`, `resumes`, `gallery`
-
-Reserved-keyword renames in `lib/cms/mappers.ts`:
-- `about.current_role` ↔ `current_job_role`
-- `experience.role` ↔ `job_role`
-- `publications.year` ↔ `publication_year`
-- `achievements.year` ↔ `award_year`
+For custom domains, follow Vercel's domain-attachment flow and update
+`NEXT_PUBLIC_SITE_URL` to match.
 
 ---
 
-## 🔧 Scripts
+## License
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Dev server → `http://localhost:3000` |
-| `npm run build` | Production build (typecheck + bundle + static prerender) |
-| `npm run start` | Serve production build |
-| `npm run lint` | ESLint |
-| `node --env-file=.env.local scripts/migrate-base64-to-storage.mjs` | One-time migration of legacy inline images |
+This project is provided as-is for portfolio reference. The codebase is
+not licensed for commercial reuse without permission. The site content
+(text, images, project case studies) is © Mahedi Hasan Emon.
 
 ---
 
-## 🌍 Deploy (Vercel)
-
-1. Push to GitHub
-2. Import to Vercel — auto-detects Next.js
-3. Set env vars in Vercel dashboard:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_KEY`
-   - `NEXT_PUBLIC_SITE_URL`
-4. Deploy → live in ~2 min
-5. Point custom domain DNS to Vercel
-
----
-
-## 👨‍💻 Author
+## Author
 
 **Mahedi Hasan Emon** — Full-Stack Developer
 
-- 🌐 [mahedihasanemon.site](https://mahedihasanemon.site)
-- 🐙 [GitHub](https://github.com/mahedi-emon)
-- 💼 [LinkedIn](https://www.linkedin.com/in/mahediemon/)
+- Website: [mahedihasanemon.site](https://mahedihasanemon.site)
+- GitHub: [@mahedi-emon](https://github.com/mahedi-emon)
+- LinkedIn: [in/mahediemon](https://www.linkedin.com/in/mahediemon/)
 
 ---
 
-<p align="center">Built with ❤️ using <b>Next.js + Supabase</b></p>
+<div align="center">
+
+<sub>Built with Next.js and Supabase.</sub>
+
+</div>
