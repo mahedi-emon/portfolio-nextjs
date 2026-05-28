@@ -32,6 +32,14 @@ export const metadata: Metadata = {
   creator: SITE_NAME,
   publisher: SITE_NAME,
   category: "Portfolio",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png", sizes: "any" },
+    ],
+    apple: "/favicon.png",
+    shortcut: "/favicon.png",
+  },
   robots: {
     index: true,
     follow: true,
