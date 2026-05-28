@@ -28,7 +28,7 @@ Thumbs.db
 
 # Supabase
 SUPABASE_READY.md
-supabase/
+/supabase/
 
 # Next.js
 .next/
