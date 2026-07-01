@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, User as UserIcon } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getBlogBySlug, getBlogSlugs } from "@/lib/cms/queries";
-import { blogPostSchema } from "@/lib/seo/jsonld";
+import { blogPostSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml, stripHtml, truncateHtml } from "@/lib/utils/sanitizeHtml";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -59,9 +60,18 @@ export default async function BlogPostPage({
 
   const date = blog.publishedDate ? new Date(blog.publishedDate) : null;
 
+  const schemas = [
+    blogPostSchema(blog),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Blog", url: `${SITE_URL}/blog` },
+      { name: blog.title, url: `${SITE_URL}/blog/${blog.slug}` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd data={blogPostSchema(blog)} />
+      <JsonLd data={schemas} />
 
       <article className="mx-auto max-w-3xl space-y-8 pb-16">
         <Link

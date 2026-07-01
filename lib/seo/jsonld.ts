@@ -365,3 +365,17 @@ export function testimonialsPageSchema(testimonials: Testimonial[]) {
     })),
   };
 }
+
+export function breadcrumbSchema(links: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": links.map((link, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": link.name,
+      "item": link.url,
+    })),
+  };
+}
+

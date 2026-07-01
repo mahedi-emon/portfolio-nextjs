@@ -4,8 +4,9 @@ import Link from "next/link";
 import { ArrowRight, Calendar, Clock, Quote, Sparkles } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getBlogs } from "@/lib/cms/queries";
-import { blogListSchema } from "@/lib/seo/jsonld";
+import { blogListSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 
@@ -22,9 +23,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BlogPage() {
   const blogs = await getBlogs();
 
+  const schemas = [
+    blogListSchema(blogs),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Blog", url: `${SITE_URL}/blog` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd data={blogListSchema(blogs)} />
+      <JsonLd data={schemas} />
 
       <div className="space-y-16 pb-16">
         <section className="relative pt-8 text-center overflow-hidden">

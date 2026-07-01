@@ -429,6 +429,41 @@ export async function getFeaturedProjects(limit = 6): Promise<Project[]> {
   return featured.length > 0 ? featured.slice(0, limit) : all.slice(0, limit);
 }
 
+
+export const getProjectSitemapData = cache(
+  unstable_cache(
+    async (): Promise<{ slug: string; updatedAt: string }[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.PROJECTS)
+        .select("slug, updated_at")
+        .eq("status", "published");
+      return (data ?? []).map((r) => ({
+        slug: (r.slug as string) || "",
+        updatedAt: (r.updated_at as string) || new Date().toISOString(),
+      })).filter(item => item.slug);
+    },
+    ["cms:project-sitemap"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
+  ),
+);
+
+export const getBlogSitemapData = cache(
+  unstable_cache(
+    async (): Promise<{ slug: string; updatedAt: string }[]> => {
+      const { data } = await supabasePublic
+        .from(DB_TABLES.BLOGS)
+        .select("slug, updated_at")
+        .eq("status", "published");
+      return (data ?? []).map((r) => ({
+        slug: (r.slug as string) || "",
+        updatedAt: (r.updated_at as string) || new Date().toISOString(),
+      })).filter(item => item.slug);
+    },
+    ["cms:blog-sitemap"],
+    { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
+  ),
+);
+
 // ============================================================================
 // Admin-only (cookie-bound, RLS-enforced, NOT cached cross-request)
 // ============================================================================

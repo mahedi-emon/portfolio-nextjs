@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Code, ExternalLink } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/queries";
-import { projectDetailSchema } from "@/lib/seo/jsonld";
+import { projectDetailSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml } from "@/lib/utils/sanitizeHtml";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -56,9 +57,18 @@ export default async function ProjectDetailPage({
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
+  const schemas = [
+    projectDetailSchema(project),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Portfolio", url: `${SITE_URL}/portfolio` },
+      { name: project.title, url: `${SITE_URL}/portfolio/${project.slug}` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd data={projectDetailSchema(project)} />
+      <JsonLd data={schemas} />
 
       <article className="space-y-10 pb-16">
         <Link

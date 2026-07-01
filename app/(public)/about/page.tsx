@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { AboutPageClient } from "@/components/public/AboutPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import {
@@ -9,8 +9,9 @@ import {
   getExperience,
   getSkills,
 } from "@/lib/cms/queries";
-import { aboutPageSchemas } from "@/lib/seo/jsonld";
+import { aboutPageSchemas, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 
@@ -38,14 +39,20 @@ export default async function AboutPage() {
     getCertifications(),
   ]);
 
+  const schemas = [
+    ...aboutPageSchemas({
+      about,
+      socialUrls: contact.socialLinks?.map((s) => s.url) ?? [],
+    }),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "About", url: `${SITE_URL}/about` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd
-        data={aboutPageSchemas({
-          about,
-          socialUrls: contact.socialLinks?.map((s) => s.url) ?? [],
-        })}
-      />
+      <JsonLd data={schemas} />
       <AboutPageClient
         data={{ about, contact, skills, education, experience, certifications }}
       />

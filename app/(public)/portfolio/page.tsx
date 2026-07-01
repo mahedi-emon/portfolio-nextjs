@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { PortfolioPageClient } from "@/components/public/PortfolioPageClient";
 import { JsonLd } from "@/components/common/JsonLd";
 import {
@@ -7,8 +7,9 @@ import {
   getProjects,
   getPublications,
 } from "@/lib/cms/queries";
-import { portfolioPageSchemas } from "@/lib/seo/jsonld";
+import { portfolioPageSchemas, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 
@@ -30,9 +31,17 @@ export default async function PortfolioPage() {
     getCertifications(),
   ]);
 
+  const schemas = [
+    ...portfolioPageSchemas(projects),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Portfolio", url: `${SITE_URL}/portfolio` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd data={portfolioPageSchemas(projects)} />
+      <JsonLd data={schemas} />
       <PortfolioPageClient
         data={{ projects, publications, achievements, certifications }}
       />

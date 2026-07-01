@@ -1,9 +1,10 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { ExternalLink, FileText } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getPublications } from "@/lib/cms/queries";
-import { publicationsPageSchema } from "@/lib/seo/jsonld";
+import { publicationsPageSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/seo/keywords";
 
 export const revalidate = 300;
 
@@ -20,9 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PublicationsPage() {
   const publications = await getPublications();
 
+  const schemas = [
+    publicationsPageSchema(publications),
+    breadcrumbSchema([
+      { name: "Home", url: SITE_URL },
+      { name: "Publications", url: `${SITE_URL}/publications` },
+    ]),
+  ];
+
   return (
     <>
-      <JsonLd data={publicationsPageSchema(publications)} />
+      <JsonLd data={schemas} />
 
       <div className="space-y-12 pb-16">
         <section className="text-center pt-8">

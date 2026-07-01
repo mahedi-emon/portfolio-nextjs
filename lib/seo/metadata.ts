@@ -38,7 +38,15 @@ export function buildMetadata({
     description,
     keywords: PAGE_KEYWORDS[page],
     alternates: { canonical: url },
-    robots: noindex ? { index: false, follow: false } : { index: true, follow: true },
+    robots: noindex
+      ? { index: false, follow: false }
+      : {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
     openGraph: {
       type: type === "profile" ? "profile" : type,
       siteName: SITE_NAME,
