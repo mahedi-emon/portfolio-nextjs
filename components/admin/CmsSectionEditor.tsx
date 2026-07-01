@@ -15,6 +15,7 @@ import {
   ChevronUp,
   ChevronDown,
   Sparkles,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { EntityForm } from "./EntityForm";
@@ -41,13 +42,20 @@ import { cn } from "@/lib/utils/cn";
 type Props = {
   schema: SectionSchema;
   initialData: Record<string, unknown> | Record<string, unknown>[];
+  activeResumeId?: string | null;
 };
 
-export function CmsSectionEditor({ schema, initialData }: Props) {
+export function CmsSectionEditor({ schema, initialData, activeResumeId }: Props) {
   if (schema.kind === "singleton") {
     return <SingletonEditor schema={schema} initial={initialData as Record<string, unknown>} />;
   }
-  return <CollectionEditor schema={schema} initial={initialData as Record<string, unknown>[]} />;
+  return (
+    <CollectionEditor
+      schema={schema}
+      initial={initialData as Record<string, unknown>[]}
+      activeResumeId={activeResumeId}
+    />
+  );
 }
 
 function SingletonEditor({
@@ -84,17 +92,24 @@ type Row = Record<string, unknown> & { id: string };
 function CollectionEditor({
   schema,
   initial,
+  activeResumeId: initialActiveResumeId,
 }: {
   schema: SectionSchema;
   initial: Record<string, unknown>[];
+  activeResumeId?: string | null;
 }) {
   const [items, setItems] = useState<Row[]>(initial as Row[]);
   const [mode, setMode] = useState<"list" | "create" | { type: "edit"; id: string }>("list");
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Row | null>(null);
+  const [currentActiveResumeId, setCurrentActiveResumeId] = useState<string | null>(
+    initialActiveResumeId ?? null,
+  );
+  const [settingActive, setSettingActive] = useState<string | null>(null);
 
   const collectionKey = schema.key as CollectionKey;
+  const isResumes = collectionKey === "resumes";
   const hasSlug = schema.fields.some((f) => f.name === "slug");
   const hasOrderIndex = schema.fields.some((f) => f.name === "orderIndex");
 
@@ -195,6 +210,41 @@ function CollectionEditor({
     );
 
   const autoComputeReadTime = schema.key === "blogs";
+
+  const handleSetActiveResume = async (id: string) => {
+    setSettingActive(id);
+    try {
+      // Update the clicked resume to "active" status
+      await updateCollectionItem(collectionKey, id, { status: "active" });
+
+      // Set any other currently active resumes to "draft"
+      const otherActiveResumes = items.filter(
+        (item) => item.id !== id && item.status === "active",
+      );
+      await Promise.all(
+        otherActiveResumes.map((item) =>
+          updateCollectionItem(collectionKey, item.id, { status: "draft" }),
+        ),
+      );
+
+      // Update the resumeSettings singleton
+      await updateSingletonRow("resumeSettings" as SingletonKey, { activeResumeId: id });
+
+      // Update local state
+      setItems((prev) =>
+        prev.map((item) => ({
+          ...item,
+          status: item.id === id ? "active" : item.status === "active" ? "draft" : item.status,
+        })),
+      );
+      setCurrentActiveResumeId(id);
+      toast.success("Resume set as active");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to set active resume");
+    } finally {
+      setSettingActive(null);
+    }
+  };
 
   if (mode === "create" || mode !== "list") {
     return (
@@ -322,14 +372,20 @@ function CollectionEditor({
             const status = (item.status as string) || "draft";
             const isFirst = idx === 0;
             const isLast = idx === filtered.length - 1;
+            const isActiveResume = isResumes && item.id === currentActiveResumeId;
             return (
               <li
                 key={item.id}
-                className="group flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 rounded-xl border border-white/10 bg-[#0B1320]/60 px-3 sm:px-4 py-3 transition-all hover:border-[#C77DFF]/30 hover:bg-[#0B1320]/80"
+                className={cn(
+                  "group flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 rounded-xl border px-3 sm:px-4 py-3 transition-all",
+                  isActiveResume
+                    ? "border-emerald-500/30 bg-emerald-500/[0.05] hover:border-emerald-500/50"
+                    : "border-white/10 bg-[#0B1320]/60 hover:border-[#C77DFF]/30 hover:bg-[#0B1320]/80",
+                )}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    {status === "published" ? (
+                    {status === "published" || status === "active" ? (
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
                     ) : (
                       <Circle className="h-3.5 w-3.5 text-yellow-500/60 flex-shrink-0" />
@@ -346,7 +402,7 @@ function CollectionEditor({
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
-                      status === "published"
+                      status === "published" || status === "active"
                         ? "bg-emerald-500/15 text-emerald-300"
                         : status === "scheduled"
                           ? "bg-cyan-500/15 text-cyan-300"
@@ -357,6 +413,34 @@ function CollectionEditor({
                   >
                     {status}
                   </span>
+                  {isResumes && (
+                    <button
+                      type="button"
+                      onClick={() => handleSetActiveResume(item.id)}
+                      disabled={isActiveResume || settingActive !== null}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all",
+                        isActiveResume
+                          ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-300 cursor-default"
+                          : "border border-white/10 text-white/60 hover:border-[#C77DFF]/40 hover:text-[#C77DFF] hover:bg-[#C77DFF]/10 disabled:opacity-40 disabled:cursor-not-allowed",
+                      )}
+                      aria-label={isActiveResume ? "Currently active" : "Set as active resume"}
+                    >
+                      {settingActive === item.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : isActiveResume ? (
+                        <>
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Active
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="h-3.5 w-3.5" />
+                          Set Active
+                        </>
+                      )}
+                    </button>
+                  )}
                   {hasOrderIndex && !search.trim() && (
                     <>
                       <button

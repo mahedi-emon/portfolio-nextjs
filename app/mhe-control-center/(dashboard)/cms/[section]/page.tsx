@@ -76,5 +76,21 @@ export default async function CmsSectionPage({
   }
   const items = deserializeRows((data ?? []) as DbRow[], section);
 
-  return <CmsSectionEditor schema={schema} initialData={items} />;
+  // For resumes, also fetch the activeResumeId from settings
+  let activeResumeId: string | null = null;
+  if (section === "resumes") {
+    const { data: settingsData } = await supabase
+      .from("cms_resume_settings")
+      .select("active_resume_id")
+      .maybeSingle();
+    activeResumeId = (settingsData?.active_resume_id as string | null) ?? null;
+  }
+
+  return (
+    <CmsSectionEditor
+      schema={schema}
+      initialData={items}
+      activeResumeId={section === "resumes" ? activeResumeId : undefined}
+    />
+  );
 }

@@ -172,7 +172,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Resumes",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["active", "draft"],
+        required: true,
+      },
       { name: "title", label: "Title", required: true },
       {
         name: "fileUrl",
