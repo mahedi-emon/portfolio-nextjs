@@ -122,7 +122,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Education",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "institution", label: "Institution", required: true },
       { name: "degree", label: "Degree", required: true },
@@ -139,7 +145,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Skills",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "name", label: "Skill Name", required: true },
       { name: "level", label: "Level", type: "number" },
@@ -150,7 +162,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Services",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "title", label: "Title", required: true },
       { name: "summary", label: "Summary", type: "textarea" },
@@ -198,7 +216,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Projects",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "slug", label: "Slug", required: true },
       { name: "title", label: "Title", required: true },
@@ -231,7 +255,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Publications",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "slug", label: "Slug", required: true },
       { name: "title", label: "Title", required: true },
@@ -266,7 +296,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Certifications",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "certificateTitle", label: "Certificate Title", required: true },
       { name: "issuer", label: "Issuer", required: true },
@@ -299,7 +335,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Experience",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "company", label: "Company", required: true },
       { name: "role", label: "Role", required: true },
@@ -353,7 +395,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Testimonials",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "author", label: "Author Name", required: true },
       {
@@ -386,7 +434,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Achievements",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "title", label: "Title", required: true },
       { name: "issuer", label: "Issuer", required: true },
@@ -426,7 +480,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     title: "Clients",
     kind: "collection",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "featured", label: "Featured Client", type: "checkbox" },
       { name: "name", label: "Company Name", required: true },
@@ -473,7 +533,13 @@ export const sectionSchemas: Record<string, SectionSchema> = {
     kind: "collection",
     tableName: "tech_stack_categories",
     fields: [
-      { name: "status", label: "Status", required: true },
+      {
+        name: "status",
+        label: "Status",
+        type: "select",
+        options: ["draft", "published", "archived"],
+        required: true,
+      },
       { name: "orderIndex", label: "Order Index", type: "number" },
       { name: "categoryName", label: "Category Name", required: true },
     ],
