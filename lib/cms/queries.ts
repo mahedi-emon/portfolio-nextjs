@@ -21,7 +21,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { defaultAbout, defaultContact, defaultHero, defaultResumeSettings } from "./defaults";
-import { deserializeRow, deserializeRows, type DbRow } from "./mappers";
+import { deserializeRow, deserializeRows, slugify, type DbRow } from "./mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { supabasePublic } from "@/lib/supabase/public";
 import { DB_TABLES } from "./tables";
@@ -154,14 +154,30 @@ export const getProjects = cache(
 export const getProjectBySlug = cache(
   unstable_cache(
     async (slug: string): Promise<Project | null> => {
+      // 1. Try exact match first
       const { data, error } = await supabasePublic
         .from(DB_TABLES.PROJECTS)
         .select(PROJECT_FULL_COLS)
         .eq("slug", slug)
         .eq("status", "published")
         .maybeSingle();
-      if (error || !data) return null;
-      return deserializeRow<Project>(data as DbRow, "projects");
+      if (!error && data) {
+        return deserializeRow<Project>(data as DbRow, "projects");
+      }
+
+      // 2. Fallback to slugified match
+      const { data: allData } = await supabasePublic
+        .from(DB_TABLES.PROJECTS)
+        .select(PROJECT_FULL_COLS)
+        .eq("status", "published");
+      const target = slugify(slug);
+      const match = (allData ?? []).find(
+        (r) => slugify((r.slug as string) || "") === target
+      );
+      if (match) {
+        return deserializeRow<Project>(match as DbRow, "projects");
+      }
+      return null;
     },
     ["cms:project-detail"],
     { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
@@ -175,7 +191,7 @@ export const getProjectSlugs = cache(
         .from(DB_TABLES.PROJECTS)
         .select("slug")
         .eq("status", "published");
-      return (data ?? []).map((r) => r.slug as string).filter(Boolean);
+      return (data ?? []).map((r) => slugify((r.slug as string) || "")).filter(Boolean);
     },
     ["cms:project-slugs"],
     { revalidate: CACHE_TTL_SECONDS, tags: tags("projects") },
@@ -207,14 +223,30 @@ export const getBlogsWithOpts = (opts: { limit?: number } = {}): Promise<Blog[]>
 export const getBlogBySlug = cache(
   unstable_cache(
     async (slug: string): Promise<Blog | null> => {
+      // 1. Try exact match first
       const { data, error } = await supabasePublic
         .from(DB_TABLES.BLOGS)
         .select(BLOG_FULL_COLS)
         .eq("slug", slug)
         .eq("status", "published")
         .maybeSingle();
-      if (error || !data) return null;
-      return deserializeRow<Blog>(data as DbRow, "blogs");
+      if (!error && data) {
+        return deserializeRow<Blog>(data as DbRow, "blogs");
+      }
+
+      // 2. Fallback to slugified match
+      const { data: allData } = await supabasePublic
+        .from(DB_TABLES.BLOGS)
+        .select(BLOG_FULL_COLS)
+        .eq("status", "published");
+      const target = slugify(slug);
+      const match = (allData ?? []).find(
+        (r) => slugify((r.slug as string) || "") === target
+      );
+      if (match) {
+        return deserializeRow<Blog>(match as DbRow, "blogs");
+      }
+      return null;
     },
     ["cms:blog-detail"],
     { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
@@ -228,7 +260,7 @@ export const getBlogSlugs = cache(
         .from(DB_TABLES.BLOGS)
         .select("slug")
         .eq("status", "published");
-      return (data ?? []).map((r) => r.slug as string).filter(Boolean);
+      return (data ?? []).map((r) => slugify((r.slug as string) || "")).filter(Boolean);
     },
     ["cms:blog-slugs"],
     { revalidate: CACHE_TTL_SECONDS, tags: tags("blogs") },
@@ -438,7 +470,7 @@ export const getProjectSitemapData = cache(
         .select("slug, updated_at")
         .eq("status", "published");
       return (data ?? []).map((r) => ({
-        slug: (r.slug as string) || "",
+        slug: slugify((r.slug as string) || ""),
         updatedAt: (r.updated_at as string) || new Date().toISOString(),
       })).filter(item => item.slug);
     },
@@ -455,7 +487,7 @@ export const getBlogSitemapData = cache(
         .select("slug, updated_at")
         .eq("status", "published");
       return (data ?? []).map((r) => ({
-        slug: (r.slug as string) || "",
+        slug: slugify((r.slug as string) || ""),
         updatedAt: (r.updated_at as string) || new Date().toISOString(),
       })).filter(item => item.slug);
     },

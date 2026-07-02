@@ -11,6 +11,15 @@
 export type DbRow = Record<string, unknown>;
 export type FrontendObject = Record<string, unknown>;
 
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function toCamelCase(str: string): string {
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
@@ -22,7 +31,11 @@ export function toSnakeCase(str: string): string {
 export function mapRowToFrontend<T extends DbRow>(row: T): FrontendObject {
   const result: FrontendObject = {};
   for (const [key, value] of Object.entries(row)) {
-    result[toCamelCase(key)] = value;
+    if (key === "slug" && typeof value === "string") {
+      result[toCamelCase(key)] = slugify(value);
+    } else {
+      result[toCamelCase(key)] = value;
+    }
   }
   return result;
 }
