@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Code, ExternalLink } from "lucide-react";
 import { JsonLd } from "@/components/common/JsonLd";
 import { getProjectBySlug, getProjectSlugs } from "@/lib/cms/queries";
@@ -8,6 +8,7 @@ import { projectDetailSchema, breadcrumbSchema } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitizeHtml } from "@/lib/utils/sanitizeHtml";
 import { SITE_URL } from "@/lib/seo/keywords";
+import { slugify } from "@/lib/cms/mappers";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -54,6 +55,14 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  
+  // Clean raw space slugs or uppercase mismatches and redirect permanently
+  const decodedSlug = decodeURIComponent(slug);
+  const clean = slugify(decodedSlug);
+  if (decodedSlug !== clean) {
+    redirect(`/portfolio/${clean}`);
+  }
+
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
